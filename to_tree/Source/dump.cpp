@@ -19,13 +19,13 @@ static const char *dump_file_position  = "DUMP/dump.tex";
 static const int kMaxFileNameLen       = 24;
 
 static void creat_html(int num_call, dump_position position);
-static void creat_dot(int num_call, expression_t tree);
+static void creat_dot(int num_call, code_tree_t tree);
 static void print_dump_elem(FILE *stream_out, node_t *elem);
 
 static void start_dump();
 static void end_dump();
 
-void show_dump(expression_t expression, dump_position position){
+void show_dump(code_tree_t expression, dump_position position){
     static int num_call = 1;
 
     if (num_call == 1){
@@ -56,7 +56,7 @@ static void creat_html(int num_call, dump_position position){
     fprintf(html_stream,  "\\newpage");
 }
 
-static void creat_dot(int num_call, expression_t expression){
+static void creat_dot(int num_call, code_tree_t expression){
     char file_name[kMaxFileNameLen] = {};
     sprintf(file_name, "DUMP/%d.dot", num_call);
 
@@ -78,27 +78,27 @@ static void print_dump_elem(FILE *stream_out, node_t *elem){
         "%lu [shape=\"plaintext\", label=<\n"
         "<TABLE BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\">\n", (unsigned long)elem);
 
-    fprintf(stream_out, "<TR><TD BGCOLOR=\"" COL_CURRENT_BACKGROUND "\" COLSPAN=\"3\">%p</TD></TR>\n", elem);
+    fprintf(stream_out, "<TR><TD BGCOLOR=\"" COL_CURRENT_BACKGROUND "\" COLSPAN=\"2\">%p</TD></TR>\n", elem);
 
     switch(elem->type){
         case OP:
-            fprintf(stream_out, "<TR><TD BGCOLOR=\"" COL_OP_BACKGROUND "\" COLSPAN=\"3\">%s</TD></TR>\n", "OP");
+            fprintf(stream_out, "<TR><TD BGCOLOR=\"" COL_OP_BACKGROUND "\" COLSPAN=\"2\">%s</TD></TR>\n", "OP");
 
-            for (size_t pos_op_list = 0; pos_op_list < sizeof(op_list) / sizeof(op_list[0]); pos_op_list++){
+            for (size_t pos_op_list = 0; pos_op_list < op_list_size; pos_op_list++){
                 if (op_list[pos_op_list].op == elem->val.op){
-                    fprintf(stream_out, "<TR><TD BGCOLOR=\"" COL_VALUE_BACKGROUND "\" COLSPAN=\"3\">%s</TD></TR>\n", op_list[pos_op_list].str_op);
+                    fprintf(stream_out, "<TR><TD BGCOLOR=\"" COL_VALUE_BACKGROUND "\" COLSPAN=\"2\">%s</TD></TR>\n", op_list[pos_op_list].str_op);
                 }
             }
             break;
 
         case VAR:
-            fprintf(stream_out, "<TR><TD BGCOLOR=\"" COL_VAR_BACKGROUND   "\" COLSPAN=\"3\">%s</TD></TR>\n", "VAR");
-            fprintf(stream_out, "<TR><TD BGCOLOR=\"" COL_VALUE_BACKGROUND "\" COLSPAN=\"3\">%s</TD></TR>\n", elem->val.var);
+            fprintf(stream_out, "<TR><TD BGCOLOR=\"" COL_VAR_BACKGROUND   "\" COLSPAN=\"2\">%s</TD></TR>\n", "VAR");
+            fprintf(stream_out, "<TR><TD BGCOLOR=\"" COL_VALUE_BACKGROUND "\" COLSPAN=\"2\">%s</TD></TR>\n", elem->val.var);
             break;
 
         case NUM:
-            fprintf(stream_out, "<TR><TD BGCOLOR=\"" COL_NUM_BACKGROUND   "\" COLSPAN=\"3\">%s</TD></TR>\n", "NUM");
-            fprintf(stream_out, "<TR><TD BGCOLOR=\"" COL_VALUE_BACKGROUND "\" COLSPAN=\"3\">%lf</TD></TR>\n", elem->val.num);
+            fprintf(stream_out, "<TR><TD BGCOLOR=\"" COL_NUM_BACKGROUND   "\" COLSPAN=\"2\">%s</TD></TR>\n", "NUM");
+            fprintf(stream_out, "<TR><TD BGCOLOR=\"" COL_VALUE_BACKGROUND "\" COLSPAN=\"2\">%d</TD></TR>\n", elem->val.num);
             break;
 
         default:
@@ -109,24 +109,18 @@ static void print_dump_elem(FILE *stream_out, node_t *elem){
         "    <TR>\n"
         "        <TD BGCOLOR=\"" COL_LEFT_BACKGROUND    "\"> %p </TD>\n"
         "        <TD BGCOLOR=\"" COL_NEXT_BACKGROUND    "\"> %p </TD>\n"
-        "        <TD BGCOLOR=\"" COL_NEXT_BACKGROUND    "\"> %p </TD>\n"
         "    </TR>\n"
         "</TABLE>\n"
-        ">];\n", elem->left_node, elem->right_node, elem->else_node);
+        ">];\n", elem->left_node, elem->right_node);
 
     if (elem->left_node){
-        fprintf(stream_out, "%lu->%lu[color=\"" COL_RIGHT_ARROW "\"];\n", (unsigned long)elem, (unsigned long)elem->left_node);
+        fprintf(stream_out, "%lu->%lu[color=\"" COL_LEFT_ARROW  "\"];\n", (unsigned long)elem, (unsigned long)elem->left_node);
         print_dump_elem(stream_out, elem->left_node);
     }
 
     if (elem->right_node){
-        fprintf(stream_out, "%lu->%lu[color=\"" COL_LEFT_ARROW "\"];\n", (unsigned long)elem, (unsigned long)elem->right_node);
+        fprintf(stream_out, "%lu->%lu[color=\"" COL_RIGHT_ARROW "\"];\n", (unsigned long)elem, (unsigned long)elem->right_node);
         print_dump_elem(stream_out, elem->right_node);
-    }
-
-    if (elem->else_node){
-        fprintf(stream_out, "%lu->%lu[color=\"" COL_LEFT_ARROW "\"];\n", (unsigned long)elem, (unsigned long)elem->else_node);
-        print_dump_elem(stream_out, elem->else_node);
     }
 }
 

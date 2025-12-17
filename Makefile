@@ -10,8 +10,10 @@ CFLAGS = -Wshadow -Winit-self -Wredundant-decls -Wcast-align -Wundef \
    -Wwrite-strings -Werror=vla -D_DEBUG -D_EJUDGE_CLIENT_SIDE -DCOLOR_PRINT
 
 DIRSOURCE       = Source
-CFLAGSH         = -IInclude
-SOURCES         = $(wildcard $(DIRSOURCE)/*.cpp)
+
+DIRSOURCETOTREE = to_tree
+CFLAGSH         = -I$(DIRSOURCETOTREE)/Include
+SOURCES         = $(wildcard $(DIRSOURCETOTREE)/$(DIRSOURCE)/*.cpp)
 OBJECTS         = $(patsubst %.cpp, %.o, $(SOURCES))
 
 DUMP_DIR        = DUMP
@@ -32,7 +34,7 @@ $(OBJECTS): %.o: %.cpp
 	$(CC) $(CFLAGS) $(CFLAGSH) -c $^ -o ./$(DIR_BUILD)/$@
 
 make_folder:
-	mkdir -p $(DIR_BUILD)/$(DIRSOURCE)/
+	mkdir -p $(DIR_BUILD)//$(DIRSOURCETOTREE)/$(DIRSOURCE)/
 	mkdir -p $(DUMP_DIR)/
 
 dump:
@@ -41,7 +43,10 @@ dump:
 	done
 
 start:
-	./$(DIR_BUILD)/$(EXECUTABLE_NAME)
+	valgrind ./$(DIR_BUILD)/$(EXECUTABLE_NAME) -s expr.txt
+	@for file_dot in $(wildcard $(DUMP_DIR)/*.dot); do \
+		dot -Tpng $$file_dot -o $${file_dot%.dot}.png; \
+	done
 
 clean:
 	rm -rf ./$(DIR_BUILD)/
