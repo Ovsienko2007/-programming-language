@@ -1,12 +1,1 @@
-if (a == 2){
-    i = 45;
-    d = 35;
-    h = 145;
-}
-else if (a == 15){
-    g = 10;
-    b = 20;
-}
-else a = v;
-
-c = 145;
+print(input())

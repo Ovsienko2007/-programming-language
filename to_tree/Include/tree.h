@@ -21,8 +21,8 @@ struct str_code{
     char    *start_pos;
 };
 
-str_code get_data(const char *file_name);
-void     destroy_strcode(str_code data);
+str_code                 get_data(const char *file_name);
+void                     destroy_strcode(str_code data);
 #define DUMP(expression) show_dump(expression, dump_position {__FILE__, __FUNCTION__,  __LINE__})
 
 enum type_node{
@@ -58,6 +58,9 @@ enum op_t{
     RIGHT_BRACKET       = 72,
     LEFT_CURLY_BRACKET  = 73,
     RIGHT_CURLY_BRACKET = 74,
+
+    INPUT               = 81,
+    PRINT               = 82,
 
     CONNECTING_NODE = 100,
 };
@@ -114,28 +117,30 @@ struct func_t{
 };
 
 static const func_t op_list[] = {
-{ADD                , "+"     , "+"    , sizeof("+"    ) - 1, 2, math          },
-{SUB                , "-"     , "-"    , sizeof("-"    ) - 1, 2, math          },
-{MUL                , "*"     , "*"    , sizeof("*"    ) - 1, 2, math          },
-{DIV                , "/"     , "/"    , sizeof("/"    ) - 1, 2, math          },
-{POW                , "^"     , "^"    , sizeof("^"    ) - 1, 2, math          },
-{IS_E               , "=="    , "=="   , sizeof("=="   ) - 1, 2, comparison    },
-{IS_NE              , "!="    , "!="   , sizeof("!="   ) - 1, 2, comparison    },
-{IS_BE              , "<="    , "<="   , sizeof("<="   ) - 1, 2, comparison    },
-{IS_B               , "<"     , "<"    , sizeof("<"    ) - 1, 2, comparison    },
-{IS_AE              , ">="    , ">="   , sizeof(">="   ) - 1, 2, comparison    },
-{IS_A               , ">"     , ">"    , sizeof(">"    ) - 1, 2, comparison    },
-{AND                , "&&"    , "&&"   , sizeof("&&"   ) - 1, 2, logical       },
-{OR                 , "||"    , "||"   , sizeof("||"   ) - 1, 2, logical       },
-{IF                 , "if"    , "if"   , sizeof("if"   ) - 1, 2, conditional_op},
-{WHILE              , "while" , "while", sizeof("while") - 1, 2, conditional_op},
-{ELSE               , "else"  , "else" , sizeof("else" ) - 1, 2, conditional_op},
-{ASSIGN             , "="     , "="    , sizeof("="    ) - 1, 2, assign_op     },
-{CONNECTING_NODE    , ";"     , ";"    , sizeof(";"    ) - 1, 2, no_type       },
-{LEFT_BRACKET       , "("     , "("    , sizeof("("    ) - 1, 0, bracket       }, 
-{RIGHT_BRACKET      , ")"     , ")"    , sizeof(")"    ) - 1, 0, bracket       }, 
-{LEFT_CURLY_BRACKET , "{"     , "{"    , sizeof("{"    ) - 1, 0, bracket       }, 
-{RIGHT_CURLY_BRACKET, "}"     , "}"    , sizeof("}"    ) - 1, 0, bracket       }, 
+{ADD                , "+"       , "+"      , sizeof("+"      ) - 1, 2, math          },
+{SUB                , "-"       , "-"      , sizeof("-"      ) - 1, 2, math          },
+{MUL                , "*"       , "*"      , sizeof("*"      ) - 1, 2, math          },
+{DIV                , "/"       , "/"      , sizeof("/"      ) - 1, 2, math          },
+{POW                , "^"       , "^"      , sizeof("^"      ) - 1, 2, math          },
+{IS_E               , "=="      , "=="     , sizeof("=="     ) - 1, 2, comparison    },
+{IS_NE              , "!="      , "!="     , sizeof("!="     ) - 1, 2, comparison    },
+{IS_BE              , "<="      , "<="     , sizeof("<="     ) - 1, 2, comparison    },
+{IS_B               , "<"       , "<"      , sizeof("<"      ) - 1, 2, comparison    },
+{IS_AE              , ">="      , ">="     , sizeof(">="     ) - 1, 2, comparison    },
+{IS_A               , ">"       , ">"      , sizeof(">"      ) - 1, 2, comparison    },
+{AND                , "&&"      , "&&"     , sizeof("&&"     ) - 1, 2, logical       },
+{OR                 , "||"      , "||"     , sizeof("||"     ) - 1, 2, logical       },
+{IF                 , "if"      , "if"     , sizeof("if"     ) - 1, 2, conditional_op},
+{WHILE              , "while"   , "while"  , sizeof("while"  ) - 1, 2, conditional_op},
+{ELSE               , "else"    , "else"   , sizeof("else"   ) - 1, 2, conditional_op},
+{ASSIGN             , "="       , "="      , sizeof("="      ) - 1, 2, assign_op     },
+{CONNECTING_NODE    , ";"       , ";"      , sizeof(";"      ) - 1, 2, no_type       },
+{LEFT_BRACKET       , "("       , "("      , sizeof("("      ) - 1, 0, bracket       }, 
+{RIGHT_BRACKET      , ")"       , ")"      , sizeof(")"      ) - 1, 0, bracket       }, 
+{LEFT_CURLY_BRACKET , "{"       , "{"      , sizeof("{"      ) - 1, 0, bracket       }, 
+{RIGHT_CURLY_BRACKET, "}"       , "}"      , sizeof("}"      ) - 1, 0, bracket       }, 
+{INPUT              , "input"   , "input()", sizeof("input()") - 1, 0, bracket       }, 
+{PRINT              , "print"   , "print"  , sizeof("print"  ) - 1, 0, bracket       },
 };
 
 static const int op_list_size = sizeof(op_list) / sizeof(op_list[0]);

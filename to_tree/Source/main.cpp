@@ -12,6 +12,8 @@ int main(int argc, char**argv){
 
     print_tree(expr, dest_name);
 
+    printf("1233");
+
     destroy_expression(expr);
     destroy_tokens_arr(tokens_arr);
 }

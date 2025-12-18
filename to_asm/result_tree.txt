@@ -1,0 +1,1 @@
+(; (= (x nil nil) (5 nil nil)) (; (= (y nil nil) (0 nil nil)) (; (if (== (x nil nil) (5 nil nil)) (else (; (= (y nil nil) (input nil nil)) (; (print (y nil nil) nil) nil)) nil)) nil)))
