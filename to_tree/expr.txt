@@ -1,7 +1,15 @@
-x = 5;
-y = 0;
+x = input()
 
-if (x == 5){
-    y = input();
-    print(y)
+while (x < 10){
+    print(x)
+
+    x = x + 1
 }
+else while(x < 15){
+    print(x)
+    x = x + 1
+}
+else if (x > 20) x = x + 2
+else x = input()
+
+print(x)

@@ -33,7 +33,7 @@ tokens_arr_t analysis(const char* file_name){
         }
 
         for (size_t check_num = 0; check_num < op_list_size; check_num++){
-            if (strncmp(op_list[check_num].char_op, data.data, 
+            if (strncmp(op_list[check_num].for_read, data.data, 
                         (size_t)op_list[check_num].size) == 0){
                 new_node = create_node(op_list[check_num].op);
 

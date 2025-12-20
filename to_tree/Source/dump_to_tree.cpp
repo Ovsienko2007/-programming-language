@@ -86,7 +86,7 @@ static void print_dump_elem(FILE *stream_out, node_t *elem){
 
             for (size_t pos_op_list = 0; pos_op_list < op_list_size; pos_op_list++){
                 if (op_list[pos_op_list].op == elem->val.op){
-                    fprintf(stream_out, "<TR><TD BGCOLOR=\"" COL_VALUE_BACKGROUND "\" COLSPAN=\"2\">%s</TD></TR>\n", op_list[pos_op_list].str_op);
+                    fprintf(stream_out, "<TR><TD BGCOLOR=\"" COL_VALUE_BACKGROUND "\" COLSPAN=\"2\">%s</TD></TR>\n", op_list[pos_op_list].for_dump);
                 }
             }
             break;

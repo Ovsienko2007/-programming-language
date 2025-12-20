@@ -1,1 +1,15 @@
-print(input())
+x = input()
+
+while (x < 10){
+    print(x)
+
+    x = x + 1
+}
+else while(x < 15){
+    print(x)
+    x = x + 2
+}
+else if (x > 20) x = x + 2
+else x = input()
+
+print(x)

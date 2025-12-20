@@ -26,10 +26,11 @@ void make_asm_file(const char *dest_name, code_tree_t tree){
     fclose(outstream);
 }
 
-static void print_while (FILE *outstream, node_t *tree, int *free_label, bool *error, var_stack_t *var_stack);
-static void print_if    (FILE *outstream, node_t *tree, int *free_label, bool *error, var_stack_t *var_stack);
-static void print_assign(FILE *outstream, node_t *tree, int *free_label, bool *error, var_stack_t *var_stack);
-static void print_var   (FILE *outstream, node_t *tree,                  bool *error, var_stack_t *var_stack);
+static void print_while       (FILE *outstream, node_t *tree, int *free_label, bool *error, var_stack_t *var_stack);
+static void print_if          (FILE *outstream, node_t *tree, int *free_label, bool *error, var_stack_t *var_stack);
+static void print_assign      (FILE *outstream, node_t *tree, int *free_label, bool *error, var_stack_t *var_stack);
+static void print_var         (FILE *outstream, node_t *tree,                  bool *error, var_stack_t *var_stack);
+static void print_line_of_pars(FILE *outstream, node_t *tree, int *free_label, bool *error, var_stack_t *var_stack);
 
 void print_node(FILE *outstream, node_t *tree, int *free_label, bool *error, var_stack_t *var_stack){
     if (tree->type == OP){
@@ -44,7 +45,7 @@ void print_node(FILE *outstream, node_t *tree, int *free_label, bool *error, var
                 print_assign(outstream, tree, free_label, error, var_stack);
                 break;
             case PRINT:
-                print_node(outstream, tree->left_node, free_label, error, var_stack);
+                print_line_of_pars(outstream, tree->left_node, free_label, error, var_stack);
                 fprintf(outstream, "OUT\n");
                 break;
             case INPUT:
@@ -88,6 +89,23 @@ void print_node(FILE *outstream, node_t *tree, int *free_label, bool *error, var
     if (*error) return;
 }
 
+static void print_line_of_pars(FILE *outstream, node_t *tree, int *free_label, bool *error, var_stack_t *var_stack){
+    if (tree == nullptr) return;
+
+    if (!(tree->type   == OP &&
+          tree->val.op == CONNECTING_NODE) ||
+        !tree->left_node){
+            *error = true;
+            return;
+    }
+
+    //last_elems
+    print_line_of_pars(outstream, tree->right_node, free_label, error, var_stack);
+
+    //current elem
+    print_node(outstream, tree->left_node, free_label, error, var_stack);
+}
+
 static void print_var(FILE *outstream, node_t *tree, bool *error, var_stack_t *var_stack){
     int pos = find_elem_var_stack(var_stack, tree->val.var);
 
@@ -109,7 +127,7 @@ static void print_assign(FILE *outstream, node_t *tree, int *free_label, bool *e
             *error = true;
     }
 
-    // source //TODO
+    //source
     print_node(outstream, tree->right_node, free_label, error, var_stack);
 
     // destination
@@ -117,7 +135,7 @@ static void print_assign(FILE *outstream, node_t *tree, int *free_label, bool *e
 
 
     if (pos == -1){
-        pos = var_stack->free;
+        pos = (int)var_stack->var_arr.size;
 
         add_elem_to_var_stack(var_stack, tree->left_node->val.var);
     }
@@ -128,10 +146,6 @@ static void print_assign(FILE *outstream, node_t *tree, int *free_label, bool *e
                        "POP [RBX]\n");
 }
 
-/**
-для break передавать параметр далее вглубину обычным параметром, чтобы была поддержка вложенного говна!!!!
-можно накинуть сверху exit через HALT 
- */
 static void print_if(FILE *outstream, node_t *tree, int *free_label, bool *error, var_stack_t *var_stack){
     if (!tree->left_node  ||
         !tree->right_node ||
@@ -168,7 +182,10 @@ static void print_if(FILE *outstream, node_t *tree, int *free_label, bool *error
 
     pop_var_stack(var_stack);
 }
-
+/**
+для break передавать параметр далее вглубину обычным параметром, чтобы была поддержка вложенного говна!!!!
+можно накинуть сверху exit через HALT 
+ */
 static void print_while(FILE *outstream, node_t *tree, int *free_label, bool *error, var_stack_t *var_stack){
     push_var_stack(var_stack);
 

@@ -130,8 +130,8 @@ static const func_t op_list[] = {
 {ELSE               , "else"  , "else"   , sizeof("else"   ) - 1, 2, conditional_op},
 {ASSIGN             , "="     , "="      , sizeof("="      ) - 1, 2, assign_op     },
 {CONNECTING_NODE    , ";"     , ";"      , sizeof(";"      ) - 1, 2, no_type       },
-{INPUT              , "IN"   , "input"  , sizeof("input"  ) - 1, 0, bracket       }, 
-{PRINT              , "OUTS"    , "print"  , sizeof("print"  ) - 1, 0, bracket       },
+{INPUT              , "IN"    , "input"  , sizeof("input"  ) - 1, 0, bracket       }, 
+{PRINT              , "OUT"   , "print"  , sizeof("print"  ) - 1, 0, bracket       },
 };
 
 static const int op_list_size = sizeof(op_list) / sizeof(op_list[0]);
@@ -162,28 +162,26 @@ void        make_asm_file(const char *dest_name, code_tree_t tree);
 //передаваемые параметры
 //предыдущий фрейм(нужен)
 //локальные переменные (нужен)
-struct var_place_t{
-    char *name;
-    int   place;
+
+struct var_arr_t{
+    size_t   size;
+    size_t   capacity;
+    char   **var_arr;
 };
 
-struct var_place_arr_t{
-    size_t       capacity;
-    size_t       size;
-    var_place_t *var_arr;
+struct stack_level_t{   
+    size_t  size;
+    size_t  capacity;
+    size_t *stack_level;
 };
 
 struct var_stack_t{
-    int               free;
-    size_t            size;
-    size_t            capacity;
-    var_place_arr_t **var_arr_arr;
-};
+    var_arr_t    var_arr;
+    stack_level_t stack_level;
 
-var_place_arr_t *init_var_arr();
-void add_elem_to_var_arr(var_place_arr_t *var_arr, char *new_elem_name, int *pos);
-int  get_name_from_arr  (var_place_arr_t *var_arr, char *new_elem_name);
-void destroy_var_arr    (var_place_arr_t *varr_arr);
+    size_t       free_pos;
+    size_t        max_free_pos;
+};
 
 var_stack_t *init_var_stack();
 int          find_elem_var_stack  (var_stack_t *var_stack, char *var_name);

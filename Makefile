@@ -83,12 +83,6 @@ $(EXECUTABLE_NAME_ASM): $(OBJECTS_ASM) $(OBJECTS_READ)
 $(BUILDDIR)/$(ASMDIR)/$(SOURCEDIR)/%.o: $(ASMDIR)/$(SOURCEDIR)/%.cpp
 	$(CC) $(CFLAGS) $(CCFLAGSH_ASM) -c $< -o $@
 
-start_to_asm:
-	valgrind ./$(DIR_BUILD)/$(EXECUTABLE_NAME) -s expr.txt
-	@for file_dot in $(wildcard $(DUMP_DIR)/*.dot); do \
-		dot -Tpng $$file_dot -o $${file_dot%.dot}.png; \
-	done
-
 DIRSOURCE_TO_ASM       = to_asm/Source
 
 CFLAGSH_TO_ASM         = -Ito_asm/Include

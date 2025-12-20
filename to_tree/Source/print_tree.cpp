@@ -28,7 +28,7 @@ static void print_nodes(FILE *out_stream, code_tree_t tree){
         case OP:
             for (size_t pos_op_list = 0; pos_op_list < op_list_size; pos_op_list++){
                 if (op_list[pos_op_list].op == tree->val.op){
-                    fprintf(out_stream, "%s ", op_list[pos_op_list].str_op);
+                    fprintf(out_stream, "%s ", op_list[pos_op_list].for_result_tree);
                 }
             }
 
