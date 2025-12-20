@@ -114,7 +114,8 @@ static code_tree_t get_var(str_code *data ){
 
     node_t *new_node = nullptr;
 
-    if ('a' <= *data->data && *data->data <= 'z'){
+    if (('a' <= *data->data && *data->data <= 'z') || 
+        ('A' <= *data->data && *data->data <= 'Z')){
         var_name_t var_name = {
             .size     = 0,
             .capacity = start_var_name_size,

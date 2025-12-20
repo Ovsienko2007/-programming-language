@@ -37,6 +37,7 @@ enum op_t{
     MUL    = 2,
     DIV    = 3,
     POW    = 4,
+    SQRT   = 5,
 
     IS_E   = 30,
     IS_NE  = 31,
@@ -54,8 +55,11 @@ enum op_t{
     WHILE  = 62,
     ELSE   = 63,
 
-    INPUT               = 81,
-    PRINT               = 82,
+    INPUT  = 81,
+    PRINT  = 82,
+
+    FUNC   = 90,
+    RETURN = 92,
 
     CONNECTING_NODE = 100,
 };
@@ -100,6 +104,7 @@ enum op_type_t{
     assign_op      = 5,
     no_type        = 7,
     bracket        = 8,
+    func_type      = 9,
 };
 
 struct func_t{
@@ -117,13 +122,14 @@ static const func_t op_list[] = {
 {MUL                , "MUL"   , "*"      , sizeof("*"      ) - 1, 2, math          },
 {DIV                , "DIV"   , "/"      , sizeof("/"      ) - 1, 2, math          },
 {POW                , "POW"   , "^"      , sizeof("^"      ) - 1, 2, math          },
+{SQRT               , "SQRT"  , "sqrt"   , sizeof("sqrt"   ) - 1, 2, math          },
 {IS_E               , "ISE"   , "=="     , sizeof("=="     ) - 1, 2, comparison    },
 {IS_NE              , "ISNE"  , "!="     , sizeof("!="     ) - 1, 2, comparison    },
 {IS_BE              , "ISBE"  , "<="     , sizeof("<="     ) - 1, 2, comparison    },
 {IS_B               , "ISB"   , "<"      , sizeof("<"      ) - 1, 2, comparison    },
 {IS_AE              , "ISAE"  , ">="     , sizeof(">="     ) - 1, 2, comparison    },
 {IS_A               , "ISA"   , ">"      , sizeof(">"      ) - 1, 2, comparison    },
-{AND                , "AND"   , "&&"     , sizeof("&&"    ) - 1, 2, logical       },
+{AND                , "AND"   , "&&"     , sizeof("&&"     ) - 1, 2, logical       },
 {OR                 , "OR"    , "||"     , sizeof("||"     ) - 1, 2, logical       },
 {IF                 , "if"    , "if"     , sizeof("if"     ) - 1, 2, conditional_op},
 {WHILE              , "while" , "while"  , sizeof("while"  ) - 1, 2, conditional_op},
@@ -132,6 +138,8 @@ static const func_t op_list[] = {
 {CONNECTING_NODE    , ";"     , ";"      , sizeof(";"      ) - 1, 2, no_type       },
 {INPUT              , "IN"    , "input"  , sizeof("input"  ) - 1, 0, bracket       }, 
 {PRINT              , "OUT"   , "print"  , sizeof("print"  ) - 1, 0, bracket       },
+{FUNC               , "FUNC"  , "FUNC"   , sizeof("FUNC"   ) - 1, 0, func_type     },
+{RETURN             , "return", "return" , sizeof("RET"    ) - 1, 0, func_type     },
 };
 
 static const int op_list_size = sizeof(op_list) / sizeof(op_list[0]);

@@ -1,21 +1,24 @@
 #include "tree.h"
 
-static code_tree_t get_number               (tokens_arr_t *tokens_arr);
-static code_tree_t get_primary_expression   (tokens_arr_t *tokens_arr);
-static code_tree_t get_expression           (tokens_arr_t *tokens_arr);
-static code_tree_t get_term                 (tokens_arr_t *tokens_arr);
-static code_tree_t get_pow                  (tokens_arr_t *tokens_arr);
-static code_tree_t get_var                  (tokens_arr_t *tokens_arr);
-static code_tree_t get_comparison_operators (tokens_arr_t *tokens_arr);
-static code_tree_t get_and_operator         (tokens_arr_t *tokens_arr);
-static code_tree_t get_or_operator          (tokens_arr_t *tokens_arr);
-static code_tree_t get_assign               (tokens_arr_t *tokens_arr);
-static code_tree_t get_if                   (tokens_arr_t *tokens_arr);
-static code_tree_t get_while                (tokens_arr_t *tokens_arr);
-static code_tree_t get_operators            (tokens_arr_t *tokens_arr);
-static code_tree_t get_print                (tokens_arr_t *tokens_arr);
-static code_tree_t get_func                 (tokens_arr_t *tokens_arr);
-static code_tree_t get_line_of_pars         (tokens_arr_t *tokens_arr);
+static code_tree_t get_primary_expression    (tokens_arr_t *tokens_arr);
+static code_tree_t get_expression            (tokens_arr_t *tokens_arr);
+static code_tree_t get_term                  (tokens_arr_t *tokens_arr);
+static code_tree_t get_pow                   (tokens_arr_t *tokens_arr);
+static code_tree_t get_var                   (tokens_arr_t *tokens_arr);
+static code_tree_t get_comparison_operators  (tokens_arr_t *tokens_arr);
+static code_tree_t get_and_operator          (tokens_arr_t *tokens_arr);
+static code_tree_t get_or_operator           (tokens_arr_t *tokens_arr);
+static code_tree_t get_assign                (tokens_arr_t *tokens_arr);
+static code_tree_t get_if                    (tokens_arr_t *tokens_arr);
+static code_tree_t get_while                 (tokens_arr_t *tokens_arr);
+static code_tree_t get_operators             (tokens_arr_t *tokens_arr);
+static code_tree_t get_print                 (tokens_arr_t *tokens_arr);
+static code_tree_t get_func                  (tokens_arr_t *tokens_arr);
+static code_tree_t get_line_of_pars          (tokens_arr_t *tokens_arr);
+static code_tree_t get_func2                 (tokens_arr_t *tokens_arr);
+static code_tree_t get_var_num_one_param_func(tokens_arr_t *tokens_arr);
+static code_tree_t get_one_param_func        (tokens_arr_t *tokens_arr);
+static code_tree_t get_return                (tokens_arr_t *tokens_arr);
 
 code_tree_t get_general(tokens_arr_t tokens_arr){
     code_tree_t tree  = get_operators(&tokens_arr);
@@ -53,6 +56,9 @@ static code_tree_t get_operators(tokens_arr_t *tokens_arr){
             node = create_node(CONNECTING_NODE, tokens_arr->node_arr[tokens_arr->pos]);
             tokens_arr->pos++;
         }
+        else if (tokens_arr->node_arr[tokens_arr->pos]->val.op == RETURN){
+            node = get_return(tokens_arr);
+        }
         else if (tokens_arr->node_arr[tokens_arr->pos]->val.op == LEFT_CURLY_BRACKET){
             tokens_arr->pos++;
             node_t *new_node = nullptr;
@@ -78,6 +84,16 @@ static code_tree_t get_operators(tokens_arr_t *tokens_arr){
     }
 
     return node;
+}
+
+static code_tree_t get_return(tokens_arr_t *tokens_arr){
+    assert(tokens_arr);
+    node_t *operation_node = tokens_arr->node_arr[tokens_arr->pos];
+    tokens_arr->pos++;
+
+    operation_node->left_node = get_or_operator(tokens_arr);
+
+    return create_node(CONNECTING_NODE, operation_node);
 }
 
 static code_tree_t get_print(tokens_arr_t *tokens_arr){
@@ -254,7 +270,8 @@ static code_tree_t get_assign(tokens_arr_t *tokens_arr){
             tokens_arr->pos++;
 
             operation_node->left_node  = par1;
-            operation_node->right_node = get_or_operator(tokens_arr);    }
+            operation_node->right_node = get_or_operator(tokens_arr);
+    }
 
     if (operation_node) return create_node(CONNECTING_NODE, operation_node);
 
@@ -267,8 +284,9 @@ static code_tree_t get_or_operator (tokens_arr_t *tokens_arr){
     node_t *par1 = get_and_operator(tokens_arr);
     if (tokens_arr->size == tokens_arr->pos) return par1;
 
-    while (tokens_arr->node_arr[tokens_arr->pos]->type   == OP && 
-           tokens_arr->node_arr[tokens_arr->pos]->val.op == OR){
+    while (tokens_arr->pos < tokens_arr->size                  &&
+           tokens_arr->node_arr[tokens_arr->pos]->type   == OP && 
+           tokens_arr->node_arr[tokens_arr->pos]->val.op == OR ){
         node_t *operation_node = tokens_arr->node_arr[tokens_arr->pos];
         tokens_arr->pos++;
 
@@ -277,7 +295,7 @@ static code_tree_t get_or_operator (tokens_arr_t *tokens_arr){
         operation_node->left_node  = par1;
         operation_node->right_node = par2;
 
-        return operation_node;
+        par1 = operation_node;
     }
 
     return par1; 
@@ -289,7 +307,8 @@ static code_tree_t get_and_operator (tokens_arr_t *tokens_arr){
     node_t *par1 = get_comparison_operators(tokens_arr);
     if (tokens_arr->size == tokens_arr->pos) return par1;
 
-    while (tokens_arr->node_arr[tokens_arr->pos]->type   == OP && 
+    while (tokens_arr->pos < tokens_arr->size                  &&
+           tokens_arr->node_arr[tokens_arr->pos]->type   == OP && 
            tokens_arr->node_arr[tokens_arr->pos]->val.op == AND){
         node_t *operation_node = tokens_arr->node_arr[tokens_arr->pos];
         tokens_arr->pos++;
@@ -299,7 +318,7 @@ static code_tree_t get_and_operator (tokens_arr_t *tokens_arr){
         operation_node->left_node  = par1;
         operation_node->right_node = par2;
 
-        return operation_node;
+        par1 = operation_node;
     }
 
     return par1; 
@@ -338,18 +357,19 @@ static code_tree_t get_expression(tokens_arr_t *tokens_arr){
     node_t *par1 = get_term(tokens_arr);
     if (tokens_arr->size == tokens_arr->pos) return par1;
 
-    if ( tokens_arr->node_arr[tokens_arr->pos]->type   == OP && 
-        (tokens_arr->node_arr[tokens_arr->pos]->val.op == ADD ||
-         tokens_arr->node_arr[tokens_arr->pos]->val.op == SUB )){
-            node_t *operation_node = tokens_arr->node_arr[tokens_arr->pos];
-            tokens_arr->pos++;
-            
-            node_t *par2 = get_term(tokens_arr);
-            
-            operation_node->left_node  = par1;
-            operation_node->right_node = par2;
+    while ( tokens_arr->pos < tokens_arr->size                  &&
+            tokens_arr->node_arr[tokens_arr->pos]->type   == OP && 
+           (tokens_arr->node_arr[tokens_arr->pos]->val.op == ADD ||
+            tokens_arr->node_arr[tokens_arr->pos]->val.op == SUB )){
+        node_t *operation_node = tokens_arr->node_arr[tokens_arr->pos];
+        tokens_arr->pos++;
+        
+        node_t *par2 = get_term(tokens_arr);
+        
+        operation_node->left_node  = par1;
+        operation_node->right_node = par2;
 
-            return operation_node;
+        par1 = operation_node;
     }
 
     return par1;
@@ -361,18 +381,19 @@ static code_tree_t get_term(tokens_arr_t *tokens_arr){
     node_t *par1 = get_pow(tokens_arr);
     if (tokens_arr->size == tokens_arr->pos) return par1;
 
-    if ( tokens_arr->node_arr[tokens_arr->pos]->type   == OP  && 
-        (tokens_arr->node_arr[tokens_arr->pos]->val.op == MUL ||
-         tokens_arr->node_arr[tokens_arr->pos]->val.op == DIV )){
-            node_t *operation_node = tokens_arr->node_arr[tokens_arr->pos];
-            tokens_arr->pos++;
-            
-            node_t *par2 = get_pow(tokens_arr);
-            
-            operation_node->left_node  = par1;
-            operation_node->right_node = par2;
+    while ( tokens_arr->pos < tokens_arr->size                   &&
+            tokens_arr->node_arr[tokens_arr->pos]->type   == OP  && 
+           (tokens_arr->node_arr[tokens_arr->pos]->val.op == MUL ||
+        tokens_arr->node_arr[tokens_arr->pos]->val.op == DIV )){
+        node_t *operation_node = tokens_arr->node_arr[tokens_arr->pos];
+        tokens_arr->pos++;
+        
+        node_t *par2 = get_pow(tokens_arr);
+        
+        operation_node->left_node  = par1;
+        operation_node->right_node = par2;
 
-            return operation_node;
+        par1 = operation_node;
     }
 
     return par1;
@@ -385,17 +406,18 @@ static code_tree_t get_pow(tokens_arr_t *tokens_arr){
     node_t *par1 = get_primary_expression(tokens_arr);
     if (tokens_arr->size == tokens_arr->pos) return par1;
 
-    if ( tokens_arr->node_arr[tokens_arr->pos]->type   == OP && 
-        (tokens_arr->node_arr[tokens_arr->pos]->val.op == POW)){
-            node_t *operation_node = tokens_arr->node_arr[tokens_arr->pos];
-            tokens_arr->pos++;
-            
-            node_t *par2 = get_primary_expression(tokens_arr);
-            
-            operation_node->left_node  = par1;
-            operation_node->right_node = par2;
+    while ( tokens_arr->pos < tokens_arr->size                  &&
+            tokens_arr->node_arr[tokens_arr->pos]->type   == OP && 
+           (tokens_arr->node_arr[tokens_arr->pos]->val.op == POW)){
+        node_t *operation_node = tokens_arr->node_arr[tokens_arr->pos];
+        tokens_arr->pos++;
+        
+        node_t *par2 = get_primary_expression(tokens_arr);
+        
+        operation_node->left_node  = par1;
+        operation_node->right_node = par2;
 
-            return operation_node;
+        par1 =  operation_node;
     }
 
     return par1;
@@ -423,36 +445,70 @@ static code_tree_t get_primary_expression(tokens_arr_t *tokens_arr){
         return ans;
     }
     else {
-        return get_number(tokens_arr);
+        return get_var_num_one_param_func(tokens_arr);
     }
 }
 
-static code_tree_t get_number(tokens_arr_t *tokens_arr){
-    assert(tokens_arr);
-
+static code_tree_t get_var_num_one_param_func(tokens_arr_t *tokens_arr){
     node_t *par = nullptr;
 
-    if (tokens_arr->node_arr[tokens_arr->pos]->type == NUM){
-         par = tokens_arr->node_arr[tokens_arr->pos];
-         tokens_arr->pos++;
-    } 
-
-    if (!par) {
-        par = get_var(tokens_arr);
-    }
-
-    if (!par) {
-        if (tokens_arr->node_arr[tokens_arr->pos]->type == OP &&
-            tokens_arr->node_arr[tokens_arr->pos]->val.op == INPUT){
-                par = tokens_arr->node_arr[tokens_arr->pos];
-                tokens_arr->pos++;
+    if (tokens_arr->node_arr[tokens_arr->pos]->type == OP){
+        if (tokens_arr->node_arr[tokens_arr->pos]->val.op == INPUT){
+            par =tokens_arr->node_arr[tokens_arr->pos];
+            tokens_arr->pos++;
+            return par;
         }
-
+        for (int i = 0; i < op_list_size; i++){
+            if (op_list[i].num_of_par == 1 && 
+                op_list[i].op  == tokens_arr->node_arr[tokens_arr->pos]->val.op){
+                    return get_one_param_func(tokens_arr);
+                }
+        }
     }
 
-    if (!par) tokens_arr->error = true;
+    if (tokens_arr->node_arr[tokens_arr->pos]->type == NUM){
+        par = tokens_arr->node_arr[tokens_arr->pos];
+        tokens_arr->pos++;
+    }
+    else if (tokens_arr->node_arr[tokens_arr->pos]->type == VAR){
+        if (tokens_arr->pos + 1 < tokens_arr->size                  && 
+            tokens_arr->node_arr[tokens_arr->pos + 1]->type   == OP &&
+            tokens_arr->node_arr[tokens_arr->pos + 1]->val.op == LEFT_BRACKET){
+                par =  get_func2(tokens_arr);
+
+        }
+        else{
+            par = tokens_arr->node_arr[tokens_arr->pos];
+            tokens_arr->pos++;
+        }   
+    }
 
     return par;
+}
+
+static code_tree_t get_one_param_func(tokens_arr_t *tokens_arr){
+    assert(tokens_arr);
+
+    node_t *operation_node = tokens_arr->node_arr[tokens_arr->pos];
+    tokens_arr->pos++;
+
+    if (tokens_arr->node_arr[tokens_arr->pos]->type   == OP && 
+        tokens_arr->node_arr[tokens_arr->pos]->val.op != LEFT_BRACKET){
+            tokens_arr->error = true;
+            return nullptr;
+    }
+    tokens_arr->pos++;
+
+    operation_node->left_node = get_or_operator(tokens_arr);
+
+    if (tokens_arr->node_arr[tokens_arr->pos]->type   == OP && 
+        tokens_arr->node_arr[tokens_arr->pos]->val.op != RIGHT_BRACKET){
+            tokens_arr->error = true;
+            return nullptr;
+    }
+    tokens_arr->pos++;
+
+    return create_node(CONNECTING_NODE, operation_node);
 }
 
 static code_tree_t get_var(tokens_arr_t *tokens_arr){
@@ -461,20 +517,54 @@ static code_tree_t get_var(tokens_arr_t *tokens_arr){
     node_t *par = nullptr;
 
     if (tokens_arr->node_arr[tokens_arr->pos]->type == VAR){
-         par = tokens_arr->node_arr[tokens_arr->pos];
-         tokens_arr->pos++;
+        par = tokens_arr->node_arr[tokens_arr->pos];
+        tokens_arr->pos++;
     }
 
     return par;
+}
+
+static code_tree_t get_func2(tokens_arr_t *tokens_arr){
+    node_t *operation_node = create_node(FUNC);
+
+    node_t *name = tokens_arr->node_arr[tokens_arr->pos];
+    tokens_arr->pos++;
+
+    if (tokens_arr->node_arr[tokens_arr->pos]->type   == OP && 
+        tokens_arr->node_arr[tokens_arr->pos]->val.op != LEFT_BRACKET){
+            tokens_arr->error = true;
+            return nullptr;
+    }
+    tokens_arr->pos++;
+
+    node_t *pars = nullptr;
+
+    if ( tokens_arr->node_arr[tokens_arr->pos]->type   != OP ||
+        (tokens_arr->node_arr[tokens_arr->pos]->type   == OP && 
+         tokens_arr->node_arr[tokens_arr->pos]->val.op != RIGHT_BRACKET)){
+            pars = get_line_of_pars(tokens_arr);
+    }
+    operation_node->left_node = create_node(CONNECTING_NODE, name, pars);
+    
+
+    if (tokens_arr->node_arr[tokens_arr->pos]->type   == OP && 
+        tokens_arr->node_arr[tokens_arr->pos]->val.op != RIGHT_BRACKET){
+            tokens_arr->error = true;
+            return nullptr;
+    }
+    tokens_arr->pos++;
+
+    return operation_node;
 }
 
 void destroy_expression(code_tree_t code_tree){
     if (code_tree->left_node ) destroy_expression(code_tree->left_node );
     if (code_tree->right_node) destroy_expression(code_tree->right_node);
 
-    if  (code_tree->type   == OP && 
-        (code_tree->val.op == CONNECTING_NODE ||
-         code_tree->val.op == ELSE )){
-            free(code_tree);
+    if  (code_tree->type       == OP && 
+        (code_tree->val.op     == CONNECTING_NODE ||
+         code_tree->val.op     == ELSE            ||
+        (code_tree->val.op     == FUNC            && code_tree->right_node == nullptr))){
+                free(code_tree);
     }
 }

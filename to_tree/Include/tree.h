@@ -37,6 +37,7 @@ enum op_t{
     MUL    = 2,
     DIV    = 3,
     POW    = 4,
+    SQRT   = 5,
 
     IS_E   = 30,
     IS_NE  = 31,
@@ -64,6 +65,7 @@ enum op_t{
 
     FUNC                = 90,
     COMMA               = 91,
+    RETURN              = 92,
 
     CONNECTING_NODE = 100,
 };
@@ -147,6 +149,8 @@ static const func_t op_list[] = {
 {PRINT              , "print"   , "print"   , "print"  , sizeof("print"  ) - 1, 0, bracket       },
 {FUNC               , "FUNC"    , "FUNC"    , "def"    , sizeof("def"    ) - 1, 0, no_type       },
 {COMMA              , ","       , ","       , ","      , sizeof(","      ) - 1, 0, no_type       },
+{RETURN             , "return"  , "return"  , "return" , sizeof("return" ) - 1, 0, no_type       },
+{SQRT               , "sqrt"    , "sqrt"    , "sqrt"   , sizeof("sqrt"   ) - 1, 1, no_type       },
 };
 
 static const int op_list_size = sizeof(op_list) / sizeof(op_list[0]);

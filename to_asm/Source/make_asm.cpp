@@ -54,10 +54,10 @@ void print_node(FILE *outstream, node_t *tree, int *free_label, bool *error, var
             case ADD  : case SUB  : case MUL  : case DIV  :
             case POW  : case IS_E : case IS_NE: case IS_BE:
             case IS_B : case IS_AE: case IS_A : case AND  : 
-            case OR   : 
-                print_node(outstream, tree->left_node, free_label, error, var_stack);
+            case OR   : case SQRT :
+                if (tree->left_node) print_node(outstream, tree->left_node, free_label, error, var_stack);
 
-                print_node(outstream, tree->right_node, free_label, error, var_stack);
+                if (tree->right_node) print_node(outstream, tree->right_node, free_label, error, var_stack);
 
                 for (size_t check_num = 0; check_num < op_list_size; check_num++){
                     if (op_list[check_num].op == tree->val.op){
@@ -74,6 +74,7 @@ void print_node(FILE *outstream, node_t *tree, int *free_label, bool *error, var
             case ELSE:
                 printf("else?\n");
                 break;
+            case FUNC: case RETURN:
             default:
                 *error = true;
                 break;
