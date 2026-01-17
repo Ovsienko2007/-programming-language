@@ -18,10 +18,6 @@ void add_elem_to_var_stack(var_stack_t *var_stack, char *new_elem_name){
     var_stack->var_arr.var_arr[var_stack->var_arr.size] = new_elem_name;
     var_stack->var_arr.size++;
 
-    if (var_stack->var_arr.size > var_stack->max_free_pos){
-        var_stack->max_free_pos = var_stack->var_arr.size;
-    }
-
     if (var_stack->var_arr.size == var_stack->var_arr.capacity){
         var_stack->var_arr.capacity *= 2;
 
@@ -33,18 +29,18 @@ void add_elem_to_var_stack(var_stack_t *var_stack, char *new_elem_name){
     }
 }
 
-void push_var_stack(var_stack_t *var_arr){
-    var_arr->stack_level.stack_level[var_arr->stack_level.size] = var_arr->var_arr.size;
-    var_arr->stack_level.size++;
+void push_var_stack(var_stack_t *var_stack){
+    var_stack->stack_level.stack_level[var_stack->stack_level.size] = var_stack->var_arr.size;
+    var_stack->stack_level.size++;
 
-    if (var_arr->stack_level.size == var_arr->stack_level.capacity){
-        var_arr->stack_level.capacity *= 2;
+    if (var_stack->stack_level.size == var_stack->stack_level.capacity){
+        var_stack->stack_level.capacity *= 2;
 
-        size_t *new_stack_level = (size_t *)realloc(var_arr->stack_level.stack_level,
-                                                    var_arr->stack_level.capacity * sizeof(size_t));
+        size_t *new_stack_level = (size_t *)realloc(var_stack->stack_level.stack_level,
+                                                    var_stack->stack_level.capacity * sizeof(size_t));
         if (!new_stack_level) return;
 
-        var_arr->stack_level.stack_level = new_stack_level;
+        var_stack->stack_level.stack_level = new_stack_level;
     }
 }
 

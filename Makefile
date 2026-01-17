@@ -21,7 +21,7 @@ DUMP_DIR        = DUMP
 EXECUTABLE_NAME = to_tree.exe
 DIR_BUILD       = Build
 
-all: to_tree make_proc to_asm
+all: to_tree proc to_asm
 
 to_tree: $(EXECUTABLE_NAME)
 
@@ -33,6 +33,9 @@ $(EXECUTABLE_NAME): make_folder  $(OBJECTS)
 
 $(OBJECTS): %.o: %.cpp
 	$(CC) $(CFLAGS) $(CFLAGSH) -c $^ -o ./$(DIR_BUILD)/$@
+
+start_to_tree: 
+	./$(DIR_BUILD)/$(EXECUTABLE_NAME) -s expr.txt
 
 DIRSOURCEASM = calculator
 
@@ -60,7 +63,7 @@ OBJECTS_ASM   = $(patsubst %.cpp, $(BUILDDIR)/%.o, $(SOURCES_ASM))
 INCLUDE_ASM   = $(ASMDIR)/$(INCLUDEDIR)
 CCFLAGSH_ASM = -I$(READFILEDIR) -I$(INCLUDE_ASM)
 
-make_proc: make_folder $(OBJECTS_READ) $(EXECUTABLE_NAME_ASM) $(EXECUTABLE_NAME_SPU)
+proc: make_folder $(OBJECTS_READ) $(EXECUTABLE_NAME_ASM) $(EXECUTABLE_NAME_SPU)
 
 #____________________________READ_______________________________
 $(BUILDDIR)/$(READFILEDIR)/%.o: $(READFILEDIR)/%.cpp

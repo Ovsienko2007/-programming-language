@@ -1,6 +1,6 @@
 #include "tree.h"
 
-void print_node(FILE *outstream, node_t *tree, int *free_label, bool *error, var_stack_t *var_stack);
+void print_node(FILE *outstream, node_t *tree, int *free_label, bool *error, var_stack_t *var_stack, func_arr_t *func_arr);
 
 void make_asm_file(const char *dest_name, code_tree_t tree){
     assert(dest_name);
@@ -12,41 +12,48 @@ void make_asm_file(const char *dest_name, code_tree_t tree){
 
     bool error = false;
 
+    func_arr_t   func_arr  = init_func_arr();
+
     var_stack_t *var_stack = init_var_stack();
     push_var_stack(var_stack);
 
-    print_node(outstream, tree, &free_label, &error, var_stack);
+    print_node(outstream, tree, &free_label, &error, var_stack, &func_arr);
+
+    fprintf(outstream, "HALT\n");
 
     if (error) printf("ERROR\n");
 
     destroy_var_stack(var_stack);
-
-    fprintf(outstream, "HALT\n");
+    destroy_func_arr(func_arr);
 
     fclose(outstream);
 }
 
-static void print_while       (FILE *outstream, node_t *tree, int *free_label, bool *error, var_stack_t *var_stack);
-static void print_if          (FILE *outstream, node_t *tree, int *free_label, bool *error, var_stack_t *var_stack);
-static void print_assign      (FILE *outstream, node_t *tree, int *free_label, bool *error, var_stack_t *var_stack);
-static void print_var         (FILE *outstream, node_t *tree,                  bool *error, var_stack_t *var_stack);
-static void print_line_of_pars(FILE *outstream, node_t *tree, int *free_label, bool *error, var_stack_t *var_stack);
+static void print_while           (FILE *outstream, node_t *tree, int *free_label, bool *error, var_stack_t *var_stack, func_arr_t *func_arr);
+static void print_if              (FILE *outstream, node_t *tree, int *free_label, bool *error, var_stack_t *var_stack, func_arr_t *func_arr);
+static void print_assign          (FILE *outstream, node_t *tree, int *free_label, bool *error, var_stack_t *var_stack, func_arr_t *func_arr);
+static int  print_line_of_pars    (FILE *outstream, node_t *tree, int *free_label, bool *error, var_stack_t *var_stack, func_arr_t *func_arr);
+static void print_func_call       (FILE *outstream, node_t *tree, int *free_label, bool *error, var_stack_t *var_stack, func_arr_t *func_arr);
+static void print_func            (FILE *outstream, node_t *tree, int *free_label, bool *error                        , func_arr_t *func_arr);
+static void print_get_param       (FILE *outstream, node_t *tree,                  bool *error, var_stack_t *var_stack);
+static int  print_get_line_of_pars(FILE *outstream, node_t *tree, int *free_label, bool *error, var_stack_t *var_stack);
+static void print_var             (FILE *outstream, node_t *tree,                  bool *error, var_stack_t *var_stack);
+static void print_print           (FILE *outstream, node_t *tree, int *free_label, bool *error, var_stack_t *var_stack, func_arr_t *func_arr);
 
-void print_node(FILE *outstream, node_t *tree, int *free_label, bool *error, var_stack_t *var_stack){
+void print_node(FILE *outstream, node_t *tree, int *free_label, bool *error, var_stack_t *var_stack, func_arr_t *func_arr){
     if (tree->type == OP){
         switch (tree->val.op){
             case IF:
-                print_if(outstream, tree, free_label, error, var_stack);
+                print_if(outstream, tree, free_label, error, var_stack, func_arr);
                 break;
             case WHILE:
-                print_while(outstream, tree, free_label, error, var_stack);
+                print_while(outstream, tree, free_label, error, var_stack, func_arr);
                 break;
             case ASSIGN:
-                print_assign(outstream, tree, free_label, error, var_stack);
+                print_assign(outstream, tree, free_label, error, var_stack, func_arr);
                 break;
             case PRINT:
-                print_line_of_pars(outstream, tree->left_node, free_label, error, var_stack);
-                fprintf(outstream, "OUT\n");
+                print_print(outstream, tree, free_label, error, var_stack, func_arr);
                 break;
             case INPUT:
                 fprintf(outstream, "IN\n");
@@ -54,10 +61,10 @@ void print_node(FILE *outstream, node_t *tree, int *free_label, bool *error, var
             case ADD  : case SUB  : case MUL  : case DIV  :
             case POW  : case IS_E : case IS_NE: case IS_BE:
             case IS_B : case IS_AE: case IS_A : case AND  : 
-            case OR   : case SQRT :
-                if (tree->left_node) print_node(outstream, tree->left_node, free_label, error, var_stack);
+            case OR   : case SQRT : case RET:
+                if (tree->left_node) print_node(outstream, tree->left_node, free_label, error, var_stack, func_arr);
 
-                if (tree->right_node) print_node(outstream, tree->right_node, free_label, error, var_stack);
+                if (tree->right_node) print_node(outstream, tree->right_node, free_label, error, var_stack, func_arr);
 
                 for (size_t check_num = 0; check_num < op_list_size; check_num++){
                     if (op_list[check_num].op == tree->val.op){
@@ -66,15 +73,22 @@ void print_node(FILE *outstream, node_t *tree, int *free_label, bool *error, var
                 }
                 break;
             case CONNECTING_NODE:
-                if (tree->left_node)  print_node(outstream, tree->left_node , free_label, error, var_stack);
+                if (tree->left_node)  print_node(outstream, tree->left_node , free_label, error, var_stack, func_arr);
 
-                if (tree->right_node) print_node(outstream, tree->right_node, free_label, error, var_stack);
+                if (tree->right_node) print_node(outstream, tree->right_node, free_label, error, var_stack, func_arr);
 
                 break;
             case ELSE:
                 printf("else?\n");
                 break;
-            case FUNC: case RETURN:
+            case FUNC: 
+                if (!tree->right_node){
+                    print_func_call(outstream, tree, free_label, error, var_stack, func_arr);
+                }
+                else {
+                    print_func(outstream, tree, free_label, error, func_arr);
+                }
+                break;
             default:
                 *error = true;
                 break;
@@ -90,21 +104,167 @@ void print_node(FILE *outstream, node_t *tree, int *free_label, bool *error, var
     if (*error) return;
 }
 
-static void print_line_of_pars(FILE *outstream, node_t *tree, int *free_label, bool *error, var_stack_t *var_stack){
-    if (tree == nullptr) return;
+static void print_print(FILE *outstream, node_t *tree, int *free_label, bool *error, var_stack_t *var_stack, func_arr_t *func_arr){
+    int num_of_pars = print_line_of_pars(outstream, tree->left_node, free_label, error, var_stack, func_arr);
+    
+    for (int par_pos = 0; par_pos < num_of_pars; par_pos++){
+        fprintf(outstream, "OUT\n");
+    }
+
+    fprintf(outstream, "NL\n");
+
+}
+
+
+static void print_assign(FILE *outstream, node_t *tree, int *free_label, bool *error, var_stack_t *var_stack, func_arr_t *func_arr){
+    if (!tree->left_node  ||
+        !tree->right_node ||
+        !tree->left_node  ||
+         tree->left_node->type != VAR){
+            *error = true;
+    }
+
+    //source
+    print_node(outstream, tree->right_node, free_label, error, var_stack, func_arr);
+
+    // destination
+    print_get_param(outstream, tree->left_node, error, var_stack);
+}
+
+static void print_func_call(FILE *outstream, node_t *tree, int *free_label, bool *error, var_stack_t *var_stack, func_arr_t *func_arr){
+    if (tree->left_node->type != OP ||
+        tree->left_node->val.op != CONNECTING_NODE){
+            printf("ERROR func_call");
+            *error = true;
+            return; 
+    }
+
+    int num_of_params = print_line_of_pars(outstream, tree->left_node->right_node, free_label, error, var_stack, func_arr);
+
+    fprintf(outstream, "PUSH RAX\n");
+    fprintf(outstream, "PUSH %zu\n", var_stack->var_arr.size);
+    fprintf(outstream, "ADD\n");
+    fprintf(outstream, "POP RAX\n");
+
+    int num_of_params_correct = -1;
+    int label = find_func_arr(func_arr, tree->left_node->left_node->val.var, &num_of_params_correct);
+
+    if (num_of_params_correct != num_of_params && num_of_params_correct != -1){
+        *error = true;
+        return;
+    }
+    
+    if (label == -1){
+        label = *free_label;
+        add_elem_func_arr(func_arr, tree->left_node->left_node->val.var, num_of_params, free_label);
+    }
+
+    fprintf(outstream, "CALL :%d\n", label);
+
+    fprintf(outstream, "PUSH RAX\n");
+    fprintf(outstream, "PUSH %zu\n", var_stack->var_arr.size);
+    fprintf(outstream, "SUB\n");
+    fprintf(outstream, "POP RAX\n");
+}
+
+static void print_func(FILE *outstream, node_t *tree, int *free_label, bool *error, func_arr_t *func_arr){
+    var_stack_t *new_var_stack = init_var_stack();
+
+    int end_func_label = *free_label;
+    (*free_label)++;
+
+    fprintf(outstream, "JMP :%d\n", end_func_label);
+
+    int num_of_params_correct = -1;
+    int func_label = find_func_arr(func_arr, tree->left_node->left_node->val.var, &num_of_params_correct);
+
+    if (func_label == -1){
+        func_label = *free_label;
+    }
+
+    fprintf(outstream, ":%d\n", func_label);
+    push_var_stack(new_var_stack);
+
+    int num_of_params = print_get_line_of_pars(outstream, tree->left_node->right_node, free_label, error, new_var_stack);
+
+    if (num_of_params_correct != -1 && num_of_params_correct != num_of_params){
+        *error = true;
+        return;
+    }
+
+    if (func_label == *free_label){
+        fprintf(stderr, "print_func\n");
+        add_elem_func_arr(func_arr, tree->left_node->left_node->val.var, num_of_params, free_label);
+    }
+
+    print_node(outstream, tree->right_node, free_label, error, new_var_stack, func_arr);
+
+    fprintf(outstream, "RET\n");
+
+    fprintf(outstream, ":%d\n", end_func_label);
+
+    destroy_var_stack(new_var_stack);
+}
+
+static int print_get_line_of_pars(FILE *outstream, node_t *tree, int *free_label, bool *error, var_stack_t *var_stack){
+    if (tree == nullptr) return 0;
 
     if (!(tree->type   == OP &&
           tree->val.op == CONNECTING_NODE) ||
         !tree->left_node){
             *error = true;
-            return;
+            printf("LINE ERROR\n");
+            return 0;
+    }
+
+    //current elem
+    print_get_param(outstream, tree->left_node, error, var_stack);
+
+    //last_elems
+    return 1 + print_get_line_of_pars(outstream, tree->right_node, free_label, error, var_stack);
+}
+
+static void print_get_param(FILE *outstream, node_t *tree, bool *error, var_stack_t *var_stack){
+    if (tree->type != VAR){
+        *error = true;
+        return;
+    }
+
+    int pos = find_elem_var_stack(var_stack, tree->val.var);
+
+    if (pos == -1){
+        pos = (int)var_stack->var_arr.size;
+
+        add_elem_to_var_stack(var_stack, tree->val.var);
+    }
+
+    fprintf(outstream, "PUSH RAX\n");
+    fprintf(outstream, "PUSH %d  ; %s <- %d\n", pos, tree->val.var, pos);
+    fprintf(outstream, "ADD\n");
+
+    fprintf(outstream, "POP  RDX\n"
+                       "POP [RDX]\n");
+}
+
+
+static int print_line_of_pars(FILE *outstream, node_t *tree, int *free_label, bool *error, var_stack_t *var_stack, func_arr_t *func_arr){
+    if (tree == nullptr) return 0;
+
+    if (!(tree->type   == OP &&
+          tree->val.op == CONNECTING_NODE) ||
+        !tree->left_node){
+            *error = true;
+            printf("LINE ERROR\n");
+            return 0;
     }
 
     //last_elems
-    print_line_of_pars(outstream, tree->right_node, free_label, error, var_stack);
+    int ans = 1 + print_line_of_pars(outstream, tree->right_node, free_label, error, var_stack, func_arr);
 
     //current elem
-    print_node(outstream, tree->left_node, free_label, error, var_stack);
+    print_node(outstream, tree->left_node, free_label, error, var_stack, func_arr);
+
+    return ans;
 }
 
 static void print_var(FILE *outstream, node_t *tree, bool *error, var_stack_t *var_stack){
@@ -115,39 +275,14 @@ static void print_var(FILE *outstream, node_t *tree, bool *error, var_stack_t *v
         return;
     }
 
+    fprintf(outstream, "PUSH RAX\n");
     fprintf(outstream, "PUSH %d\n", pos);
+    fprintf(outstream, "ADD\n");
     fprintf(outstream, "POP  RBX\n"
                        "PUSH [RBX]\n");
 }
 
-static void print_assign(FILE *outstream, node_t *tree, int *free_label, bool *error, var_stack_t *var_stack){
-    if (!tree->left_node  ||
-        !tree->right_node ||
-        !tree->left_node  ||
-         tree->left_node->type != VAR){
-            *error = true;
-    }
-
-    //source
-    print_node(outstream, tree->right_node, free_label, error, var_stack);
-
-    // destination
-    int pos = find_elem_var_stack(var_stack, tree->left_node->val.var);
-
-
-    if (pos == -1){
-        pos = (int)var_stack->var_arr.size;
-
-        add_elem_to_var_stack(var_stack, tree->left_node->val.var);
-    }
-    
-    fprintf(outstream, "PUSH %d  ; %s <- %d\n", pos, tree->left_node->val.var, pos);
-
-    fprintf(outstream, "POP  RBX\n"
-                       "POP [RBX]\n");
-}
-
-static void print_if(FILE *outstream, node_t *tree, int *free_label, bool *error, var_stack_t *var_stack){
+static void print_if(FILE *outstream, node_t *tree, int *free_label, bool *error, var_stack_t *var_stack, func_arr_t *func_arr){
     if (!tree->left_node  ||
         !tree->right_node ||
         !tree->right_node->left_node){
@@ -162,20 +297,20 @@ static void print_if(FILE *outstream, node_t *tree, int *free_label, bool *error
     *free_label += 2;
 
     // condition
-    print_node(outstream, tree->left_node, free_label, error, var_stack);
+    print_node(outstream, tree->left_node, free_label, error, var_stack, func_arr);
 
     fprintf(outstream, "PUSH 0\n");
     fprintf(outstream, "JE :%d\n", start_else);
 
     // main
-    print_node(outstream, tree->right_node->left_node, free_label, error, var_stack);
+    print_node(outstream, tree->right_node->left_node, free_label, error, var_stack, func_arr);
 
     fprintf(outstream, "JMP :%d\n", end_construct);
     fprintf(outstream, ":%d\n"    , start_else);
 
     // else
     if (tree->right_node->right_node){
-        print_node(outstream, tree->right_node->right_node, free_label, error, var_stack);
+        print_node(outstream, tree->right_node->right_node, free_label, error, var_stack, func_arr);
     }
 
     // end
@@ -187,7 +322,7 @@ static void print_if(FILE *outstream, node_t *tree, int *free_label, bool *error
 для break передавать параметр далее вглубину обычным параметром, чтобы была поддержка вложенного говна!!!!
 можно накинуть сверху exit через HALT 
  */
-static void print_while(FILE *outstream, node_t *tree, int *free_label, bool *error, var_stack_t *var_stack){
+static void print_while(FILE *outstream, node_t *tree, int *free_label, bool *error, var_stack_t *var_stack, func_arr_t *func_arr){
     push_var_stack(var_stack);
 
     if (!tree->left_node  ||
@@ -202,7 +337,7 @@ static void print_while(FILE *outstream, node_t *tree, int *free_label, bool *er
     *free_label += 3;
 
     // 1 condition
-    print_node(outstream, tree->left_node, free_label, error, var_stack);
+    print_node(outstream, tree->left_node, free_label, error, var_stack, func_arr);
 
     fprintf(outstream, "PUSH 0\n");
     fprintf(outstream, "JE :%d\n", start_else);
@@ -211,13 +346,13 @@ static void print_while(FILE *outstream, node_t *tree, int *free_label, bool *er
     fprintf(outstream, ":%d\n", start_main);
 
     // other conditions
-    print_node(outstream, tree->left_node, free_label, error, var_stack);
+    print_node(outstream, tree->left_node, free_label, error, var_stack, func_arr);
 
     fprintf(outstream, "PUSH 0\n");
     fprintf(outstream, "JE :%d\n", end_construct);
 
     // main
-    print_node(outstream, tree->right_node->left_node, free_label, error, var_stack);
+    print_node(outstream, tree->right_node->left_node, free_label, error, var_stack, func_arr);
 
     fprintf(outstream, "JMP :%d\n", start_main);
 
@@ -225,7 +360,7 @@ static void print_while(FILE *outstream, node_t *tree, int *free_label, bool *er
     fprintf(outstream, ":%d\n"    , start_else);
 
     if (tree->right_node->right_node){
-        print_node(outstream, tree->right_node->right_node, free_label, error, var_stack);
+        print_node(outstream, tree->right_node->right_node, free_label, error, var_stack, func_arr);
     }
 
     // end

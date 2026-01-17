@@ -59,7 +59,7 @@ enum op_t{
     PRINT  = 82,
 
     FUNC   = 90,
-    RETURN = 92,
+    RET    = 92,
 
     CONNECTING_NODE = 100,
 };
@@ -139,7 +139,7 @@ static const func_t op_list[] = {
 {INPUT              , "IN"    , "input"  , sizeof("input"  ) - 1, 0, bracket       }, 
 {PRINT              , "OUT"   , "print"  , sizeof("print"  ) - 1, 0, bracket       },
 {FUNC               , "FUNC"  , "FUNC"   , sizeof("FUNC"   ) - 1, 0, func_type     },
-{RETURN             , "return", "return" , sizeof("RET"    ) - 1, 0, func_type     },
+{RET                , "RET"   , "RET"    , sizeof("RET"    ) - 1, 0, func_type     },
 };
 
 static const int op_list_size = sizeof(op_list) / sizeof(op_list[0]);
@@ -167,10 +167,6 @@ void        get_file_name(int argc, char **argv, const char **source_name, const
 
 void        make_asm_file(const char *dest_name, code_tree_t tree);
 
-//передаваемые параметры
-//предыдущий фрейм(нужен)
-//локальные переменные (нужен)
-
 struct var_arr_t{
     size_t   size;
     size_t   capacity;
@@ -188,7 +184,6 @@ struct var_stack_t{
     stack_level_t stack_level;
 
     size_t       free_pos;
-    size_t        max_free_pos;
 };
 
 var_stack_t *init_var_stack();
@@ -196,8 +191,23 @@ int          find_elem_var_stack  (var_stack_t *var_stack, char *var_name);
 void         add_elem_to_var_stack(var_stack_t *var_stack, char *new_elem_name);
 void         pop_var_stack        (var_stack_t *var_stack);
 void         destroy_var_stack    (var_stack_t *var_stack);
-void         push_var_stack       (var_stack_t *var_arr);
+void         push_var_stack       (var_stack_t *var_stack);
 
-void print_dump(var_stack_t *var_stack);
+struct func_name_t{
+    int     nam_of_pars;
+    char   *func_name;
+    int     label;
+};
+
+struct func_arr_t{
+    func_name_t *func;
+    size_t size;
+    size_t capacity;
+};
+
+func_arr_t init_func_arr();
+void       destroy_func_arr (func_arr_t  func_arr);
+int        find_func_arr    (func_arr_t *func_arr, char *func_name, int *num_of_pars);
+void       add_elem_func_arr(func_arr_t *func_arr, char *func_name, int  num_of_pars, int *free_label);
 
 #endif

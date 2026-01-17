@@ -21,4 +21,7 @@ else{
 
         print(ans)
     }
+    else{
+        print(321123)
+    }
 }

@@ -75,12 +75,21 @@ static code_tree_t get_operators(tokens_arr_t *tokens_arr){
             tokens_arr->pos++;
         }
         else if (tokens_arr->node_arr[tokens_arr->pos]->val.op == FUNC){
-            fprintf(stderr, "is_func\n");
             node = get_func(tokens_arr);
         }
     }
-    else {
-        node = get_assign(tokens_arr);
+    else if (tokens_arr->node_arr[tokens_arr->pos]->type == VAR){
+        if (tokens_arr->size > tokens_arr->pos                    &&
+            tokens_arr->node_arr[tokens_arr->pos + 1]->type == OP &&
+            tokens_arr->node_arr[tokens_arr->pos + 1]->val.op == LEFT_BRACKET){
+                node = get_func2(tokens_arr);
+        }
+        else {
+            node = get_assign(tokens_arr);
+        }
+    }
+    else{
+        fprintf(stderr, "what?");
     }
 
     return node;
@@ -554,7 +563,7 @@ static code_tree_t get_func2(tokens_arr_t *tokens_arr){
     }
     tokens_arr->pos++;
 
-    return operation_node;
+    return create_node(CONNECTING_NODE, operation_node);
 }
 
 void destroy_expression(code_tree_t code_tree){

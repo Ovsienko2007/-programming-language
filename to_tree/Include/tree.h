@@ -128,6 +128,7 @@ static const func_t op_list[] = {
 {MUL                , "*"       , "*"       , "*"      , sizeof("*"      ) - 1, 2, math          },
 {DIV                , "/"       , "/"       , "/"      , sizeof("/"      ) - 1, 2, math          },
 {POW                , "^"       , "^"       , "^"      , sizeof("^"      ) - 1, 2, math          },
+{SQRT               , "sqrt"    , "sqrt"    , "sqrt"   , sizeof("sqrt"   ) - 1, 1, no_type       },
 {IS_E               , "IS_E"    , "=="      , "=="     , sizeof("=="     ) - 1, 2, comparison    },
 {IS_NE              , "IS_NE"   , "!="      , "!="     , sizeof("!="     ) - 1, 2, comparison    },
 {IS_BE              , "IS_BE"   , "<="      , "<="     , sizeof("<="     ) - 1, 2, comparison    },
@@ -149,8 +150,7 @@ static const func_t op_list[] = {
 {PRINT              , "print"   , "print"   , "print"  , sizeof("print"  ) - 1, 0, bracket       },
 {FUNC               , "FUNC"    , "FUNC"    , "def"    , sizeof("def"    ) - 1, 0, no_type       },
 {COMMA              , ","       , ","       , ","      , sizeof(","      ) - 1, 0, no_type       },
-{RETURN             , "return"  , "return"  , "return" , sizeof("return" ) - 1, 0, no_type       },
-{SQRT               , "sqrt"    , "sqrt"    , "sqrt"   , sizeof("sqrt"   ) - 1, 1, no_type       },
+{RETURN             , "return"  , "RET"     , "return" , sizeof("return" ) - 1, 0, no_type       },
 };
 
 static const int op_list_size = sizeof(op_list) / sizeof(op_list[0]);
