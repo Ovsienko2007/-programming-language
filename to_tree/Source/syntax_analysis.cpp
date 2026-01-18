@@ -111,25 +111,7 @@ static code_tree_t get_print(tokens_arr_t *tokens_arr){
     node_t *operation_node = tokens_arr->node_arr[tokens_arr->pos];
     tokens_arr->pos++;
 
-    if (tokens_arr->node_arr[tokens_arr->pos]->type   == OP && 
-        tokens_arr->node_arr[tokens_arr->pos]->val.op != LEFT_BRACKET){
-            tokens_arr->error = true;
-            return nullptr;
-    }
-    tokens_arr->pos++;
-
-    if ( tokens_arr->node_arr[tokens_arr->pos]->type   != OP ||
-        (tokens_arr->node_arr[tokens_arr->pos]->type   == OP && 
-         tokens_arr->node_arr[tokens_arr->pos]->val.op != RIGHT_BRACKET)){
-            operation_node->left_node = get_line_of_pars(tokens_arr);
-    }
-
-    if (tokens_arr->node_arr[tokens_arr->pos]->type   == OP && 
-        tokens_arr->node_arr[tokens_arr->pos]->val.op != RIGHT_BRACKET){
-            tokens_arr->error = true;
-            return nullptr;
-    }
-    tokens_arr->pos++;
+    operation_node->left_node = get_line_of_pars(tokens_arr);
 
     return create_node(CONNECTING_NODE, operation_node);
 }
@@ -181,8 +163,8 @@ static code_tree_t get_line_of_pars(tokens_arr_t *tokens_arr){
     node_t *new_elem = get_or_operator(tokens_arr);
     node_t *new_line = create_node(CONNECTING_NODE, new_elem);
 
-
-    if (tokens_arr->node_arr[tokens_arr->pos]->type   == OP && 
+    if (tokens_arr->pos < tokens_arr->size &&
+        tokens_arr->node_arr[tokens_arr->pos]->type   == OP && 
         tokens_arr->node_arr[tokens_arr->pos]->val.op == COMMA){
             tokens_arr->pos++;
             new_line->right_node = get_line_of_pars(tokens_arr);

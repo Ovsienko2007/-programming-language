@@ -21,7 +21,7 @@ DUMP_DIR        = DUMP
 EXECUTABLE_NAME = to_tree.exe
 DIR_BUILD       = Build
 
-all: to_tree proc to_asm
+all: to_tree proc to_asm to_code
 
 to_tree: $(EXECUTABLE_NAME)
 
@@ -86,6 +86,7 @@ $(EXECUTABLE_NAME_ASM): $(OBJECTS_ASM) $(OBJECTS_READ)
 $(BUILDDIR)/$(ASMDIR)/$(SOURCEDIR)/%.o: $(ASMDIR)/$(SOURCEDIR)/%.cpp
 	$(CC) $(CFLAGS) $(CCFLAGSH_ASM) -c $< -o $@
 
+#_____________________________TO_ASM_____________________________
 DIRSOURCE_TO_ASM       = to_asm/Source
 
 CFLAGSH_TO_ASM         = -Ito_asm/Include
@@ -114,6 +115,26 @@ dump:
 		dot -Tpng $$file_dot -o $${file_dot%.dot}.png; \
 	done
 
+#_____________________________TO_CODE____________________________
+DIRSOURCE_TO_CODE       = to_code/Source
+
+CFLAGSH_TO_CODE         = -Ito_code/Include
+SOURCES_TO_CODE         = $(wildcard $(DIRSOURCE_TO_CODE)/*.cpp)
+OBJECTS_TO_CODE         = $(patsubst %.cpp, %.o, $(SOURCES_TO_CODE))
+
+DUMP_DIR_TO_CODE        = DUMP
+
+EXECUTABLE_NAME_TO_CODE = to_code.exe
+
+to_code: $(EXECUTABLE_NAME_TO_CODE)
+
+$(EXECUTABLE_NAME_TO_CODE): make_folder  $(OBJECTS_TO_CODE)
+	echo $(OBJECTS_TO_CODE)
+	$(CC) $(addprefix ./$(DIR_BUILD)/, $(OBJECTS_TO_CODE)) -o ./$(DIR_BUILD)/$(EXECUTABLE_NAME_TO_CODE)
+
+$(OBJECTS_TO_CODE): %.o: %.cpp
+	$(CC) $(CFLAGS) $(CFLAGSH_TO_CODE) -c $^ -o ./$(DIR_BUILD)/$@
+
 #________________________STARTS_________________________________
 start_spu:
 	./$(BUILDDIR)/$(EXECUTABLE_NAME_SPU)
@@ -129,10 +150,9 @@ start:
 
 start_to_asm:
 	valgrind ./$(DIR_BUILD)/$(EXECUTABLE_NAME_TO_ASM) -s result_tree.txt
-	@for file_dot in $(wildcard $(DUMP_DIR_TO_ASM)/*.dot); do \
-		dot -Tpng $$file_dot -o $${file_dot%.dot}.png; \
-	done
 
+start_to_code:
+	valgrind ./$(DIR_BUILD)/$(EXECUTABLE_NAME_TO_CODE) -s result_tree.txt
 #_____________________CREAT FOLDERS_____________________________
 make_folder:
 	mkdir -p $(BUILDDIR)/$(READFILEDIR)
@@ -140,6 +160,7 @@ make_folder:
 	mkdir -p $(BUILDDIR)/$(ASMDIR)/$(SOURCEDIR)
 	mkdir -p $(DIR_BUILD)/$(DIRSOURCETOTREE)/$(DIRSOURCE)/
 	mkdir -p $(DIR_BUILD)/$(DIRSOURCE_TO_ASM)/
+	mkdir -p $(DIR_BUILD)/$(DIRSOURCE_TO_CODE)/
 
 	mkdir -p $(DUMP_DIR)/
 	@echo "Folders were created!"

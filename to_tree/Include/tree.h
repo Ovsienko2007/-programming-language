@@ -137,20 +137,35 @@ static const func_t op_list[] = {
 {IS_A               , "IS_B"    , ">"       , ">"      , sizeof(">"      ) - 1, 2, comparison    },
 {AND                , "&&"      , "&&"      , "&&"     , sizeof("&&"     ) - 1, 2, logical       },
 {OR                 , "||"      , "||"      , "||"     , sizeof("||"     ) - 1, 2, logical       },
-{IF                 , "if"      , "if"      , "if"     , sizeof("if"     ) - 1, 2, conditional_op},
-{WHILE              , "while"   , "while"   , "while"  , sizeof("while"  ) - 1, 2, conditional_op},
-{ELSE               , "else"    , "else"    , "else"   , sizeof("else"   ) - 1, 2, conditional_op},
-{ASSIGN             , "="       , "="       , "="      , sizeof("="      ) - 1, 2, assign_op     },
 {CONNECTING_NODE    , ";"       , ";"       , ";"      , sizeof(";"      ) - 1, 2, no_type       },
 {LEFT_BRACKET       , "("       , "("       , "("      , sizeof("("      ) - 1, 0, bracket       }, 
 {RIGHT_BRACKET      , ")"       , ")"       , ")"      , sizeof(")"      ) - 1, 0, bracket       }, 
 {LEFT_CURLY_BRACKET , "{"       , "{"       , "{"      , sizeof("{"      ) - 1, 0, bracket       }, 
 {RIGHT_CURLY_BRACKET, "}"       , "}"       , "}"      , sizeof("}"      ) - 1, 0, bracket       }, 
-{INPUT              , "input"   , "input"   , "input()", sizeof("input()") - 1, 0, bracket       }, 
-{PRINT              , "print"   , "print"   , "print"  , sizeof("print"  ) - 1, 0, bracket       },
-{FUNC               , "FUNC"    , "FUNC"    , "def"    , sizeof("def"    ) - 1, 0, no_type       },
-{COMMA              , ","       , ","       , ","      , sizeof(","      ) - 1, 0, no_type       },
-{RETURN             , "return"  , "RET"     , "return" , sizeof("return" ) - 1, 0, no_type       },
+
+{IF                 , "if"      , "if"      ,       "Во имя Императора выполни если" , 
+                                             sizeof("Во имя Императора выполни если" ) - 1, 2, conditional_op},
+
+{WHILE              , "while"   , "while"   ,       "Во имя Императора выполняй пока", 
+                                             sizeof("Во имя Императора выполняй пока") - 1, 2, conditional_op},
+
+{ELSE               , "else"    , "else"    ,       "В противном случае"              , 
+                                             sizeof("В противном случае") - 1, 2, conditional_op},
+
+{ASSIGN             , "="       , "="       ,       "даруй значение"                 , 
+                                             sizeof("даруй значение") - 1, 2, assign_op     },
+
+{INPUT              , "input"   , "input"   ,       "с консоли" , 
+                                             sizeof("с консоли") - 1, 0, conditional_op},
+
+{PRINT              , "print"   , "print"   ,       "Именем Омнииссии заклинаю тебя, Машина, выведи сии значения в консоль:", 
+                                             sizeof("Именем Омнииссии заклинаю тебя, Машина, выведи сии значения в консоль:") - 1, 0, conditional_op       },
+
+{FUNC               , "FUNC"    , "FUNC"    ,       "О, Омнииссия, даруй же Машине силы выполнить сей приказ", 
+                                             sizeof("О, Омнииссия, даруй же Машине силы выполнить сей приказ") - 1, 0, no_type       },
+
+{COMMA              , ","       , ","       , ","         , sizeof(","      ) - 1, 0, no_type       },
+{RETURN             , "return"  , "RET"     , "отдай"     , sizeof("отдай" ) - 1, 0, no_type       },
 };
 
 static const int op_list_size = sizeof(op_list) / sizeof(op_list[0]);
