@@ -143,16 +143,16 @@ start_asm:
 	./$(BUILDDIR)/$(EXECUTABLE_NAME_ASM) result_asm.asm
 
 start:
-	./$(DIR_BUILD)/$(EXECUTABLE_NAME) -s expr.txt
+	./$(DIR_BUILD)/$(EXECUTABLE_NAME) -s expr.omn
 	./$(DIR_BUILD)/$(EXECUTABLE_NAME_TO_ASM) -s result_tree.txt
 	./$(BUILDDIR)/$(EXECUTABLE_NAME_ASM) result_asm.asm
 	./$(BUILDDIR)/$(EXECUTABLE_NAME_SPU)
 
 start_to_asm:
-	valgrind ./$(DIR_BUILD)/$(EXECUTABLE_NAME_TO_ASM) -s result_tree.txt
+	./$(DIR_BUILD)/$(EXECUTABLE_NAME_TO_ASM) -s result_tree.txt
 
 start_to_code:
-	valgrind ./$(DIR_BUILD)/$(EXECUTABLE_NAME_TO_CODE) -s result_tree.txt
+	./$(DIR_BUILD)/$(EXECUTABLE_NAME_TO_CODE) -s result_tree.txt
 #_____________________CREAT FOLDERS_____________________________
 make_folder:
 	mkdir -p $(BUILDDIR)/$(READFILEDIR)

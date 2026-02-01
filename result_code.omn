@@ -1,0 +1,22 @@
+number_for_factorial даруй значение с консоли
+
+test_var даруй значение 131
+
+Именем Омнииссии заклинаю тебя, Машина, выведи сии значения в консоль: factorial(number_for_factorial), test_var, number_for_factorial
+
+О, Омнииссия, даруй же Машине силы выполнить сей приказ factorial(number_for_factorial){
+	var_in_factorial даруй значение 0
+
+	Во имя Императора выполни если (number_for_factorial == 1){
+		var_in_factorial даруй значение 1
+
+	}
+	В противном случае {
+		var_in_factorial даруй значение number_for_factorial * factorial(number_for_factorial - 1)
+
+	}
+
+	Именем Омнииссии заклинаю тебя, Машина, выведи сии значения в консоль: var_in_factorial
+
+	отдай var_in_factorial
+}

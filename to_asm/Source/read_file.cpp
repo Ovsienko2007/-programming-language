@@ -23,6 +23,7 @@ void get_file_name(int argc, char **argv, const char **source_name, const char *
             arg_pos++;
         }
     }
+
     if (!source_name_is_get){
         *source_name = "result_tree.txt";
     }
@@ -33,6 +34,7 @@ void get_file_name(int argc, char **argv, const char **source_name, const char *
 
 str_code get_data(const char *file_name){
     assert(file_name);
+
     str_code data = {};
 
     data.size = find_file_size(file_name) + 1;

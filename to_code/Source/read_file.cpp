@@ -27,7 +27,7 @@ void get_file_name(int argc, char **argv, const char **source_name, const char *
         *source_name = "result_tree.txt";
     }
     if (!dest_name_is_get){
-        *dest_name = "result_code.asm";
+        *dest_name = "result_code.omn";
     }
 }
 

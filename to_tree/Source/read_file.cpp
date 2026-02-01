@@ -24,7 +24,7 @@ void get_file_name(int argc, char **argv, const char **source_name, const char *
         }
     }
     if (!source_name_is_get){
-        *source_name = "expression.txt";
+        *source_name = "expression.omn";
     }
     if (!dest_name_is_get){
         *dest_name = "result_tree.txt";

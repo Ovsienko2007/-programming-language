@@ -251,7 +251,7 @@ static void print_if(FILE *outstream, node_t *tree,  bool *error, int level){
 
     if (tree->right_node->right_node){
         print_indentation(outstream, level);
-        fprintf(outstream, "В противном случае {");
+        fprintf(outstream, "В противном случае {\n");
 
         print_node(outstream, tree->right_node->right_node, error, level + 1);
 
@@ -273,6 +273,9 @@ static void print_while(FILE *outstream, node_t *tree,  bool *error, int level){
             return;
     }
 
+    print_indentation(outstream, level);
+    fprintf(outstream, "Во имя Императора выполняй пока (");
+
     print_node(outstream, tree->left_node, error, 0);
 
     fprintf(outstream, "){\n");
@@ -281,7 +284,7 @@ static void print_while(FILE *outstream, node_t *tree,  bool *error, int level){
 
     if (tree->right_node->right_node){
         print_indentation(outstream, level);
-        fprintf(outstream, "В противном случае");
+        fprintf(outstream, "В противном случае {\n");
 
         print_node(outstream, tree->right_node->right_node, error, level + 1);
     }

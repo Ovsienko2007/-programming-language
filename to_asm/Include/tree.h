@@ -109,8 +109,8 @@ enum op_type_t{
 
 struct func_t{
     op_t         op;
-    const char  *str_op;
-    const char  *char_op;
+    const char  *for_asm;
+    const char  *for_tree;
     int          size;
     int          num_of_par;
     op_type_t    type;

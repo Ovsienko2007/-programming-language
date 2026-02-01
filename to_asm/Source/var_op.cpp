@@ -45,6 +45,9 @@ void push_var_stack(var_stack_t *var_stack){
 }
 
 int find_elem_var_stack(var_stack_t *var_stack, char *var_name){
+    assert(var_stack);
+    assert(var_name);
+
     for (size_t pos_var_stack = 0; pos_var_stack < var_stack->var_arr.size; pos_var_stack++){
         if (strcmp(var_stack->var_arr.var_arr[pos_var_stack], var_name) == 0){
             return (int)pos_var_stack;

@@ -68,7 +68,7 @@ void print_node(FILE *outstream, node_t *tree, int *free_label, bool *error, var
 
                 for (size_t check_num = 0; check_num < op_list_size; check_num++){
                     if (op_list[check_num].op == tree->val.op){
-                        fprintf(outstream, "%s\n", op_list[check_num].str_op);
+                        fprintf(outstream, "%s\n", op_list[check_num].for_asm);
                     }
                 }
                 break;
@@ -333,7 +333,7 @@ static void print_while(FILE *outstream, node_t *tree, int *free_label, bool *er
 
     int end_construct = *free_label;
     int start_main    = *free_label + 1;
-    int start_else    = *free_label + 2;
+    int start_else    = *free_label + 2; //TODO const
     *free_label += 3;
 
     // 1 condition
@@ -365,7 +365,6 @@ static void print_while(FILE *outstream, node_t *tree, int *free_label, bool *er
 
     // end
     fprintf(outstream, ":%d\n"    , end_construct);
-
 
     pop_var_stack(var_stack);
 }

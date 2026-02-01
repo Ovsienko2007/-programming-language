@@ -54,7 +54,7 @@ static code_tree_t get_tree_from_str_code(str_code *data){
 
     for (size_t check_num = 0; check_num < op_list_size; check_num++){
         if (data->data[op_list[check_num].size] == ' ' &&
-            strncmp(op_list[check_num].char_op, data->data, 
+            strncmp(op_list[check_num].for_tree, data->data, 
                     (size_t)op_list[check_num].size) == 0){
             new_node = create_node(op_list[check_num].op);
 
