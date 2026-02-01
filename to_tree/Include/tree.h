@@ -51,9 +51,11 @@ enum op_t{
 
     ASSIGN = 50,
 
-    IF     = 61,
-    WHILE  = 62,
-    ELSE   = 63,
+    IF       = 61,
+    WHILE    = 62,
+    ELSE     = 63,
+    BREAK    = 64,
+    CONTINUE = 65,
 
     LEFT_BRACKET        = 71,
     RIGHT_BRACKET       = 72,

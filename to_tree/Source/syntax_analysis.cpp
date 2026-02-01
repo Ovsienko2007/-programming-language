@@ -100,7 +100,7 @@ static code_tree_t get_return(tokens_arr_t *tokens_arr){
     node_t *operation_node = tokens_arr->node_arr[tokens_arr->pos];
     tokens_arr->pos++;
 
-    operation_node->left_node = get_or_operator(tokens_arr);
+    operation_node->left_node = get_line_of_pars(tokens_arr);
 
     return create_node(CONNECTING_NODE, operation_node);
 }
@@ -253,7 +253,7 @@ static code_tree_t get_assign(tokens_arr_t *tokens_arr){
     assert(tokens_arr);
 
     node_t *operation_node = nullptr;
-    node_t *par1 = get_var(tokens_arr);
+    node_t *par1 = get_line_of_pars(tokens_arr);
 
     if (tokens_arr->node_arr[tokens_arr->pos]->type   == OP && 
         tokens_arr->node_arr[tokens_arr->pos]->val.op == ASSIGN){
@@ -261,7 +261,7 @@ static code_tree_t get_assign(tokens_arr_t *tokens_arr){
             tokens_arr->pos++;
 
             operation_node->left_node  = par1;
-            operation_node->right_node = get_or_operator(tokens_arr);
+            operation_node->right_node = get_line_of_pars(tokens_arr);
     }
 
     if (operation_node) return create_node(CONNECTING_NODE, operation_node);

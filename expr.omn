@@ -1,6 +1,8 @@
 number_for_factorial даруй значение с консоли
 
-test_var даруй значение 131
+test_var1, testvar2 даруй значение 131, 134
+
+Именем Омнииссии заклинаю тебя, Машина, выведи сии значения в консоль: test_var1, testvar2
 
 Именем Омнииссии заклинаю тебя, Машина, выведи сии значения в консоль: factorial(number_for_factorial), test_var, number_for_factorial
 

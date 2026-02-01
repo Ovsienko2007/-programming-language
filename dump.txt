@@ -23,3 +23,28 @@ Stack [0x0x7ffe828014d0]{
       [canary]	   0XDEADBEEF
    }
 }
+StackDump called from calculator/SPU/Stack/stack.cpp:88 from func pop_stack
+The 1 call
+Error: Zero size
+Stack [0x0x7ffdfa97b140]{
+  size:     0
+  capacity: 14
+  data [0x0x55acdb3ed7e0]{
+      [canary]	   0XDEADBEEF
+      [0]	            1 (poision)
+      [1]	            0 (poision)
+      [2]	            4 (poision)
+      [3]	            0 (poision)
+      [4]	            0 (poision)
+      [5]	            0 (poision)
+      [6]	            0 (poision)
+      [7]	            0 (poision)
+      [8]	            0 (poision)
+      [9]	            0 (poision)
+      [10]	            0 (poision)
+      [11]	            0 (poision)
+      [12]	            0 (poision)
+      [13]	            0 (poision)
+      [canary]	   0XDEADBEEF
+   }
+}
