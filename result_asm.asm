@@ -1,18 +1,57 @@
+	PUSH 0
 	IN
 	PUSH RAX
-	PUSH 0  ; number_for_factorial <- 0
-	ADD
-	POP  RDX
-	POP [RDX]
-	PUSH 134
-	PUSH 131
-	PUSH RAX
-	PUSH 1  ; test_var1 <- 1
+	PUSH 0  ; a <- 0
 	ADD
 	POP  RDX
 	POP [RDX]
 	PUSH RAX
-	PUSH 2  ; testvar2 <- 2
+	PUSH 1  ; b <- 1
+	ADD
+	POP  RDX
+	POP [RDX]
+	PUSH RAX
+	PUSH 1
+	ADD
+	POP  RBX
+	PUSH [RBX]
+	PUSH RAX
+	PUSH 0
+	ADD
+	POP  RBX
+	PUSH [RBX]
+	ISB
+	PUSH 0
+	JE :2
+:1
+	PUSH RAX
+	PUSH 1
+	ADD
+	POP  RBX
+	PUSH [RBX]
+	PUSH RAX
+	PUSH 0
+	ADD
+	POP  RBX
+	PUSH [RBX]
+	ISB
+	PUSH 0
+	JE :0
+	PUSH RAX
+	PUSH 1
+	ADD
+	POP  RBX
+	PUSH [RBX]
+	PUSH 1
+	ADD
+	PUSH RAX
+	PUSH 1  ; b <- 1
+	ADD
+	POP  RDX
+	POP [RDX]
+	PUSH 0
+	PUSH RAX
+	PUSH 2  ; c <- 2
 	ADD
 	POP  RDX
 	POP [RDX]
@@ -21,108 +60,92 @@
 	ADD
 	POP  RBX
 	PUSH [RBX]
+	PUSH 10
+	ISB
+	PUSH 0
+	JE :5
+:4
+	PUSH RAX
+	PUSH 2
+	ADD
+	POP  RBX
+	PUSH [RBX]
+	PUSH 10
+	ISB
+	PUSH 0
+	JE :3
+	PUSH RAX
+	PUSH 2
+	ADD
+	POP  RBX
+	PUSH [RBX]
+	PUSH 5
+	ISE
+	PUSH 0
+	JE :7
+	JMP :3
+	JMP :6
+:7
+:6
+	PUSH RAX
+	PUSH 2
+	ADD
+	POP  RBX
+	PUSH [RBX]
+	PUSH 1
+	ADD
+	PUSH RAX
+	PUSH 2  ; c <- 2
+	ADD
+	POP  RDX
+	POP [RDX]
+	PUSH RAX
+	PUSH 2
+	ADD
+	POP  RBX
+	PUSH [RBX]
+	OUT
+	NL
+	JMP :4
+:5
+:3
 	PUSH RAX
 	PUSH 1
 	ADD
 	POP  RBX
 	PUSH [RBX]
-	OUT
-	OUT
-	NL
 	PUSH RAX
-	PUSH 0
+	PUSH 1
 	ADD
 	POP  RBX
 	PUSH [RBX]
-	PUSH RAX
-	PUSH 0
-	ADD
-	POP  RBX
-	PUSH [RBX]
-	PUSH RAX
-	PUSH 3
-	ADD
-	POP RAX
-	CALL :0
-	PUSH RAX
-	PUSH 3
+	PUSH 2
+	DIV
+	PUSH 2
+	MUL
 	SUB
-	POP RAX
-	OUT
+	PUSH 0
+	ISE
+	PUSH 0
+	JE :9
+	JMP :1
+	JMP :8
+:9
+:8
+	PUSH RAX
+	PUSH 1
+	ADD
+	POP  RBX
+	PUSH [RBX]
+	PUSH RAX
+	PUSH 0
+	ADD
+	POP  RBX
+	PUSH [RBX]
 	OUT
 	OUT
 	NL
 	JMP :1
-:0
-	PUSH RAX
-	PUSH 0  ; number_for_factorial <- 0
-	ADD
-	POP  RDX
-	POP [RDX]
-	PUSH 0
-	PUSH RAX
-	PUSH 1  ; var_in_factorial <- 1
-	ADD
-	POP  RDX
-	POP [RDX]
-	PUSH RAX
-	PUSH 0
-	ADD
-	POP  RBX
-	PUSH [RBX]
-	PUSH 1
-	ISE
-	PUSH 0
-	JE :3
-	PUSH 1
-	PUSH RAX
-	PUSH 1  ; var_in_factorial <- 1
-	ADD
-	POP  RDX
-	POP [RDX]
-	JMP :2
-:3
-	PUSH RAX
-	PUSH 0
-	ADD
-	POP  RBX
-	PUSH [RBX]
-	PUSH RAX
-	PUSH 0
-	ADD
-	POP  RBX
-	PUSH [RBX]
-	PUSH 1
-	SUB
-	PUSH RAX
-	PUSH 2
-	ADD
-	POP RAX
-	CALL :0
-	PUSH RAX
-	PUSH 2
-	SUB
-	POP RAX
-	MUL
-	PUSH RAX
-	PUSH 1  ; var_in_factorial <- 1
-	ADD
-	POP  RDX
-	POP [RDX]
 :2
-	PUSH RAX
-	PUSH 1
-	ADD
-	POP  RBX
-	PUSH [RBX]
-	OUT
-	NL
-	PUSH RAX
-	PUSH 1
-	ADD
-	POP  RBX
-	PUSH [RBX]
-	RET
-	RET
-:1
+:0
 	HALT

@@ -32,34 +32,36 @@ enum type_node{
 };
 
 enum op_t{
-    ADD    = 0,
-    SUB    = 1,
-    MUL    = 2,
-    DIV    = 3,
-    POW    = 4,
-    SQRT   = 5,
+    ADD      = 0,
+    SUB      = 1,
+    MUL      = 2,
+    DIV      = 3,
+    POW      = 4,
+    SQRT     = 5,
 
-    IS_E   = 30,
-    IS_NE  = 31,
-    IS_B   = 32,
-    IS_BE  = 33,
-    IS_A   = 34,
-    IS_AE  = 35,
+    IS_E     = 30,
+    IS_NE    = 31,
+    IS_B     = 32,
+    IS_BE    = 33,
+    IS_A     = 34,
+    IS_AE    = 35,
 
-    AND    = 40,
-    OR     = 41,
+    AND      = 40,
+    OR       = 41,
+ 
+    ASSIGN   = 50,
 
-    ASSIGN = 50,
+    IF       = 61,
+    WHILE    = 62,
+    ELSE     = 63,
+    BREAK    = 64,
+    CONTINUE = 65,
 
-    IF     = 61,
-    WHILE  = 62,
-    ELSE   = 63,
+    INPUT    = 81,
+    PRINT    = 82,
 
-    INPUT  = 81,
-    PRINT  = 82,
-
-    FUNC   = 90,
-    RET    = 92,
+    FUNC     = 90,
+    RET      = 92,
 
     CONNECTING_NODE = 100,
 };
@@ -117,29 +119,32 @@ struct func_t{
 };
 
 static const func_t op_list[] = {
-{ADD                , "ADD"   , "+"      , sizeof("+"      ) - 1, 2, math          },
-{SUB                , "SUB"   , "-"      , sizeof("-"      ) - 1, 2, math          },
-{MUL                , "MUL"   , "*"      , sizeof("*"      ) - 1, 2, math          },
-{DIV                , "DIV"   , "/"      , sizeof("/"      ) - 1, 2, math          },
-{POW                , "POW"   , "^"      , sizeof("^"      ) - 1, 2, math          },
-{SQRT               , "SQRT"  , "sqrt"   , sizeof("sqrt"   ) - 1, 2, math          },
-{IS_E               , "ISE"   , "=="     , sizeof("=="     ) - 1, 2, comparison    },
-{IS_NE              , "ISNE"  , "!="     , sizeof("!="     ) - 1, 2, comparison    },
-{IS_BE              , "ISBE"  , "<="     , sizeof("<="     ) - 1, 2, comparison    },
-{IS_B               , "ISB"   , "<"      , sizeof("<"      ) - 1, 2, comparison    },
-{IS_AE              , "ISAE"  , ">="     , sizeof(">="     ) - 1, 2, comparison    },
-{IS_A               , "ISA"   , ">"      , sizeof(">"      ) - 1, 2, comparison    },
-{AND                , "AND"   , "&&"     , sizeof("&&"     ) - 1, 2, logical       },
-{OR                 , "OR"    , "||"     , sizeof("||"     ) - 1, 2, logical       },
-{IF                 , "if"    , "if"     , sizeof("if"     ) - 1, 2, conditional_op},
-{WHILE              , "while" , "while"  , sizeof("while"  ) - 1, 2, conditional_op},
-{ELSE               , "else"  , "else"   , sizeof("else"   ) - 1, 2, conditional_op},
-{ASSIGN             , "="     , "="      , sizeof("="      ) - 1, 2, assign_op     },
-{CONNECTING_NODE    , ";"     , ";"      , sizeof(";"      ) - 1, 2, no_type       },
-{INPUT              , "IN"    , "input"  , sizeof("input"  ) - 1, 0, bracket       }, 
-{PRINT              , "OUT"   , "print"  , sizeof("print"  ) - 1, 0, bracket       },
-{FUNC               , "FUNC"  , "FUNC"   , sizeof("FUNC"   ) - 1, 0, func_type     },
-{RET                , "RET"   , "RET"    , sizeof("RET"    ) - 1, 0, func_type     },
+{ADD                , "ADD"     , "+"       , sizeof("+"       ) - 1, 2, math          },
+{SUB                , "SUB"     , "-"       , sizeof("-"       ) - 1, 2, math          },
+{MUL                , "MUL"     , "*"       , sizeof("*"       ) - 1, 2, math          },
+{DIV                , "DIV"     , "/"       , sizeof("/"       ) - 1, 2, math          },
+{POW                , "POW"     , "^"       , sizeof("^"       ) - 1, 2, math          },
+{SQRT               , "SQRT"    , "sqrt"    , sizeof("sqrt"    ) - 1, 2, math          },
+{IS_E               , "ISE"     , "=="      , sizeof("=="      ) - 1, 2, comparison    },
+{IS_NE              , "ISNE"    , "!="      , sizeof("!="      ) - 1, 2, comparison    },
+{IS_BE              , "ISBE"    , "<="      , sizeof("<="      ) - 1, 2, comparison    },
+{IS_B               , "ISB"     , "<"       , sizeof("<"       ) - 1, 2, comparison    },
+{IS_AE              , "ISAE"    , ">="      , sizeof(">="      ) - 1, 2, comparison    },
+{IS_A               , "ISA"     , ">"       , sizeof(">"       ) - 1, 2, comparison    },
+{AND                , "AND"     , "&&"      , sizeof("&&"      ) - 1, 2, logical       },
+{OR                 , "OR"      , "||"      , sizeof("||"      ) - 1, 2, logical       },
+{IF                 , "if"      , "if"      , sizeof("if"      ) - 1, 2, conditional_op},
+{WHILE              , "while"   , "while"   , sizeof("while"   ) - 1, 2, conditional_op},
+{ELSE               , "else"    , "else"    , sizeof("else"    ) - 1, 2, conditional_op},
+{ASSIGN             , "="       , "="       , sizeof("="       ) - 1, 2, assign_op     },
+{CONNECTING_NODE    , ";"       , ";"       , sizeof(";"       ) - 1, 2, no_type       },
+{INPUT              , "IN"      , "input"   , sizeof("input"   ) - 1, 0, bracket       }, 
+{PRINT              , "OUT"     , "print"   , sizeof("print"   ) - 1, 0, bracket       },
+{FUNC               , "FUNC"    , "FUNC"    , sizeof("FUNC"    ) - 1, 0, func_type     },
+{RET                , "RET"     , "RET"     , sizeof("RET"     ) - 1, 0, func_type     },
+{BREAK              , "break"   , "break"   , sizeof("break"   ) - 1, 0, no_type       },
+{CONTINUE           , "continue", "continue", sizeof("continue") - 1, 0, no_type       },
+
 };
 
 static const int op_list_size = sizeof(op_list) / sizeof(op_list[0]);
@@ -209,5 +214,10 @@ func_arr_t init_func_arr();
 void       destroy_func_arr (func_arr_t  func_arr);
 int        find_func_arr    (func_arr_t *func_arr, char *func_name, int *num_of_pars);
 void       add_elem_func_arr(func_arr_t *func_arr, char *func_name, int  num_of_pars, int *free_label);
+
+struct continue_break_labels_t{
+    int continue_label;
+    int break_label;
+};
 
 #endif

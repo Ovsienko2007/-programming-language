@@ -161,13 +161,20 @@ static const func_t op_list[] = {
                                              sizeof("с консоли") - 1, 0, conditional_op},
 
 {PRINT              , "print"   , "print"   ,       "Именем Омнииссии заклинаю тебя, Машина, выведи сии значения в консоль:", 
-                                             sizeof("Именем Омнииссии заклинаю тебя, Машина, выведи сии значения в консоль:") - 1, 0, conditional_op       },
+                                             sizeof("Именем Омнииссии заклинаю тебя, Машина, выведи сии значения в консоль:") - 1, 0, conditional_op},
 
 {FUNC               , "FUNC"    , "FUNC"    ,       "О, Омнииссия, даруй же Машине силы выполнить сей приказ", 
-                                             sizeof("О, Омнииссия, даруй же Машине силы выполнить сей приказ") - 1, 0, no_type       },
+                                             sizeof("О, Омнииссия, даруй же Машине силы выполнить сей приказ"               ) - 1, 0, no_type},
 
-{COMMA              , ","       , ","       , ","         , sizeof(","      ) - 1, 0, no_type       },
-{RETURN             , "return"  , "RET"     , "отдай"     , sizeof("отдай" ) - 1, 0, no_type       },
+{COMMA              , ","       , ","       , ","         , sizeof(","      ) - 1, 0, no_type },
+{RETURN             , "return"  , "RET"     , "отдай"     , sizeof("отдай"  ) - 1, 0, no_type },
+
+{BREAK              , "break"   , "break"   , "Во имя Имеператора прекратить!"     
+                                            , sizeof("Во имя Имеператора прекратить!" ) - 1, 0, no_type},
+{CONTINUE           , "continue", "continue", "Во имя Имеператора пропустить!"     
+                                            , sizeof("Во имя Имеператора пропустить!" ) - 1, 0, no_type},
+
+
 };
 
 static const int op_list_size = sizeof(op_list) / sizeof(op_list[0]);

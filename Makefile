@@ -35,7 +35,7 @@ $(OBJECTS): %.o: %.cpp
 	$(CC) $(CFLAGS) $(CFLAGSH) -c $^ -o ./$(DIR_BUILD)/$@
 
 start_to_tree: 
-	./$(DIR_BUILD)/$(EXECUTABLE_NAME) -s expr.txt
+	./$(DIR_BUILD)/$(EXECUTABLE_NAME) -s expr.omn
 
 DIRSOURCEASM = calculator
 

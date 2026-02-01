@@ -4,7 +4,6 @@ static code_tree_t get_primary_expression    (tokens_arr_t *tokens_arr);
 static code_tree_t get_expression            (tokens_arr_t *tokens_arr);
 static code_tree_t get_term                  (tokens_arr_t *tokens_arr);
 static code_tree_t get_pow                   (tokens_arr_t *tokens_arr);
-static code_tree_t get_var                   (tokens_arr_t *tokens_arr);
 static code_tree_t get_comparison_operators  (tokens_arr_t *tokens_arr);
 static code_tree_t get_and_operator          (tokens_arr_t *tokens_arr);
 static code_tree_t get_or_operator           (tokens_arr_t *tokens_arr);
@@ -52,7 +51,9 @@ static code_tree_t get_operators(tokens_arr_t *tokens_arr){
         else if (tokens_arr->node_arr[tokens_arr->pos]->val.op == PRINT){
             node = get_print(tokens_arr);
         }
-        else if (tokens_arr->node_arr[tokens_arr->pos]->val.op == INPUT){
+        else if (tokens_arr->node_arr[tokens_arr->pos]->val.op == INPUT    ||
+                 tokens_arr->node_arr[tokens_arr->pos]->val.op == BREAK    ||
+                 tokens_arr->node_arr[tokens_arr->pos]->val.op == CONTINUE ){
             node = create_node(CONNECTING_NODE, tokens_arr->node_arr[tokens_arr->pos]);
             tokens_arr->pos++;
         }
@@ -500,19 +501,6 @@ static code_tree_t get_one_param_func(tokens_arr_t *tokens_arr){
     tokens_arr->pos++;
 
     return create_node(CONNECTING_NODE, operation_node);
-}
-
-static code_tree_t get_var(tokens_arr_t *tokens_arr){
-    assert(tokens_arr);
-
-    node_t *par = nullptr;
-
-    if (tokens_arr->node_arr[tokens_arr->pos]->type == VAR){
-        par = tokens_arr->node_arr[tokens_arr->pos];
-        tokens_arr->pos++;
-    }
-
-    return par;
 }
 
 static code_tree_t get_func2(tokens_arr_t *tokens_arr){
